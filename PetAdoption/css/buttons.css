@@ -1,0 +1,116 @@
+
+
+.sidebar-btn svg,
+.action-btn svg,
+.action-btn-small svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+
+.action-btn-small svg {
+    width: 16px;
+    height: 16px;
+}
+
+.photo-upload-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+  
+.sidebar-btn {  
+    display: flex;  
+    align-items: center;  
+    gap: 12px;  
+    padding: 14px 18px;  
+    border: none;  
+    background-color: transparent;  
+    color: #666;  
+    font-size: 15px;  
+    font-weight: 500;  
+    border-radius: 10px;  
+    cursor: pointer;  
+    transition: all 0.3s ease;  
+    text-align: left;  
+    position: relative;  
+}
+
+.sidebar-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.sidebar-btn.active {
+    background-color: #007BFF;
+    color: white;
+}
+
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 35px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn.primary {
+    background-color: #007BFF;
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.action-btn.secondary {
+    background-color: #e0e0e0;
+    color: #666;
+}
+
+.action-btn.secondary:hover {
+    background-color: #d0d0d0;
+    transform: scale(1.05);
+}
+
+
+.action-btn-small {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border: none;
+    background-color: #f5f5f5;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn-small:hover {
+    background-color: #e8e8e8;
+    color: #333;
+}
+
+
+@media (max-width: 768px) {
+    .sidebar-btn {
+        white-space: nowrap;
+    }
+    
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

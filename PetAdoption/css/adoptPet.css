@@ -1,0 +1,138 @@
+.adoption-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 40px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.adoption-form-title {
+    text-align: center;
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 40px;
+    font-weight: bold;
+}
+
+.adoption-content {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 50px;
+}
+
+.pet-info {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.pet-info img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.pet-info h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.pet-info .breed {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.pet-info .details {
+    font-size: 16px;
+    color: #666;
+}
+
+.form-section {
+    padding: 20px 0;
+}
+
+.form-intro {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.question {
+    margin-bottom: 30px;
+}
+
+.question-text {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.question-label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.answer-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f5f5f5;
+    resize: vertical;
+    min-height: 60px;
+    font-family: Arial, sans-serif;
+}
+
+.answer-input:focus {
+    outline: none;
+    border-color: #007BFF;
+    background-color: white;
+}
+
+.submit-btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.back-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-left: 15px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #5a6268;
+}

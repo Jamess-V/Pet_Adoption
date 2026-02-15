@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Pet Care Logs - ADOPET Staff</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/staff.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/careLogs.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <div class="logo">
+                <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
+            </div>
+            <ul class="nav-links">
+                <li><a href="staff.html">Home</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
+            <a href="../user/login.html" class="btn btn-login">Login</a>
+        </div>
+    </nav>
+    <div class="staff-container">
+        <aside class="sidebar">
+            <button class="sidebar-btn" onclick="window.location.href='staff.html'">
+                <svg viewBox="0 0 20 20">
+                    <rect x="3" y="3" width="6" height="6" rx="1"/>
+                    <rect x="11" y="3" width="6" height="6" rx="1"/>
+                    <rect x="3" y="11" width="6" height="6" rx="1"/>
+                    <rect x="11" y="11" width="6" height="6" rx="1"/>
+                </svg>
+                Dashboard
+            </button>
+            <button class="sidebar-btn" onclick="window.location.href='petManagement.html'">
+                <svg viewBox="0 0 20 20">
+                    <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
+                </svg>
+                Pet Management
+            </button>
+            <button class="sidebar-btn">
+                <svg viewBox="0 0 20 20">
+                    <path d="M10 2C5.6 2 2 5.6 2 10C2 14.4 5.6 18 10 18C14.4 18 18 14.4 18 10C18 5.6 14.4 2 10 2ZM10 16C6.7 16 4 13.3 4 10C4 6.7 6.7 4 10 4C13.3 4 16 6.7 16 10C16 13.3 13.3 16 10 16Z"/>
+                    <path d="M10 6C9.4 6 9 6.4 9 7V10.4L11.3 12.7C11.7 13.1 12.3 13.1 12.7 12.7C13.1 12.3 13.1 11.7 12.7 11.3L11 9.6V7C11 6.4 10.6 6 10 6Z"/>
+                </svg>
+                Medical Records
+            </button>
+            <button class="sidebar-btn active">
+                <svg viewBox="0 0 20 20">
+                    <rect x="4" y="3" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <line x1="7" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5"/>
+                    <line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.5"/>
+                    <line x1="7" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                Daily Pet Care Logs
+            </button>
+            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.html'">
+                <svg viewBox="0 0 20 20">
+                    <path d="M10 9C11.7 9 13 7.7 13 6C13 4.3 11.7 3 10 3C8.3 3 7 4.3 7 6C7 7.7 8.3 9 10 9Z"/>
+                    <path d="M10 11C6.7 11 4 13.7 4 17H16C16 13.7 13.3 11 10 11Z"/>
+                </svg>
+                Meet & Greet
+            </button>
+            <button class="sidebar-btn">
+                <svg viewBox="0 0 20 20">
+                    <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
+                    <line x1="8" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="1.5"/>
+                    <line x1="8" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                Applications
+            </button>
+        </aside>
+
+        <main class="care-logs-content">
+            <h2>Daily Pet Care Logs</h2>
+
+            <div class="filters">
+                <button class="filter-btn active">Today</button>
+                <select class="filter-select">
+                    <option value="all">Pet</option>
+                    <option value="max">Max</option>
+                    <option value="luna">Luna</option>
+                    <option value="bella">Bella</option>
+                    <option value="charlie">Charlie</option>
+                </select>
+                <select class="filter-select">
+                    <option value="all">Activity Type</option>
+                    <option value="feeding">Feeding</option>
+                    <option value="medication">Medication</option>
+                    <option value="exercise">Exercise</option>
+                    <option value="grooming">Grooming</option>
+                    <option value="training">Training</option>
+                </select>
+            </div>
+
+            <div class="logs-list">
+                <div class="log-card">
+                    <div class="log-content">
+                        <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-avatar">
+                        <div class="log-details">
+                            <h3>Max</h3>
+                            <p class="log-time">10:15 AM</p>
+                            <p class="log-description">Fed morning meal. Ate well, finished entire portion.</p>
+                        </div>
+                    </div>
+                    <span class="activity-badge feeding">Feeding</span>
+                </div>
+
+                <div class="log-card">
+                    <div class="log-content">
+                        <img src="../Image/Scottish_cat.jpg" alt="Luna" class="pet-avatar">
+                        <div class="log-details">
+                            <h3>Luna</h3>
+                            <p class="log-time">09:45 AM</p>
+                            <p class="log-description">Administered prescribed antibiotics with food.</p>
+                        </div>
+                    </div>
+                    <span class="activity-badge medication">Medication</span>
+                </div>
+
+                <div class="log-card">
+                    <div class="log-content">
+                        <img src="../Image/Golden-Retriever.jpg" alt="Bella" class="pet-avatar">
+                        <div class="log-details">
+                            <h3>Bella</h3>
+                            <p class="log-time">09:00 AM</p>
+                            <p class="log-description">30-minute walk in the park. Very energetic and playful.</p>
+                        </div>
+                    </div>
+                    <span class="activity-badge exercise">Exercise</span>
+                </div>
+
+                <div class="log-card">
+                    <div class="log-content">
+                        <img src="../Image/dog.jpg" alt="Charlie" class="pet-avatar">
+                        <div class="log-details">
+                            <h3>Charlie</h3>
+                            <p class="log-time">08:30 AM</p>
+                            <p class="log-description">Bathed and groomed. Coat looking healthy and shiny.</p>
+                        </div>
+                    </div>
+                    <span class="activity-badge grooming">Grooming</span>
+                </div>
+
+                <div class="log-card">
+                    <div class="log-content">
+                        <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-avatar">
+                        <div class="log-details">
+                            <h3>Max</h3>
+                            <p class="log-time">07:45 AM</p>
+                            <p class="log-description">Basic obedience training session. Responded well to commands.</p>
+                        </div>
+                    </div>
+                    <span class="activity-badge training">Training</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

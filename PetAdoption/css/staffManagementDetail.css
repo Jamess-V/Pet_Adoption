@@ -1,0 +1,312 @@
+
+.staff-detail-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+}
+
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.detail-header h2 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+}
+
+
+.edit-btn {
+    padding: 10px 24px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.edit-btn:active {
+    transform: scale(0.98);
+}
+
+
+.detail-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    gap: 40px;
+}
+
+.detail-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.detail-right {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+
+.detail-section {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+
+.staff-name {
+    font-size: 28px;
+    color: #333;
+    margin: 0 0 5px 0;
+    font-weight: 700;
+}
+
+.staff-position {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 15px 0;
+}
+
+
+.basic-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.basic-info p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    line-height: 1.8;
+}
+
+.basic-info strong {
+    color: #555;
+    font-weight: 600;
+}
+
+
+.section-title {
+    font-size: 18px;
+    color: #333;
+    margin: 0 0 15px 0;
+    font-weight: 600;
+}
+
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-content p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    line-height: 1.8;
+}
+
+.section-content strong {
+    color: #555;
+    font-weight: 600;
+}
+
+
+.role-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.role-title {
+    font-size: 18px;
+    color: #333;
+    margin: 0 0 20px 0;
+    font-weight: 600;
+}
+
+.current-role {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.current-role p {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.role-badge.manager {
+    background-color: #007BFF;
+    color: white;
+}
+
+.role-badge.senior-staff {
+    background-color: #28a745;
+    color: white;
+}
+
+.role-badge.staff {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.role-badge.volunteer {
+    background-color: #6c757d;
+    color: white;
+}
+
+.role-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.role-options label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.role-select {
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.role-select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.assign-role-btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.assign-role-btn:hover {
+    background-color: #0056b3;
+}
+
+.assign-role-btn:active {
+    transform: scale(0.98);
+}
+
+
+.save-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+}
+
+.save-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.save-notification .check-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.save-notification span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+@media (max-width: 1024px) {
+    .detail-container {
+        flex-direction: column;
+    }
+
+    .detail-right {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .staff-detail-content {
+        padding: 20px;
+    }
+
+    .detail-container {
+        padding: 20px;
+    }
+
+    .staff-name {
+        font-size: 24px;
+    }
+
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .edit-btn {
+        width: 100%;
+    }
+}

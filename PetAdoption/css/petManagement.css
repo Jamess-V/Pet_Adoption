@@ -1,0 +1,128 @@
+
+.pet-management-content {
+    flex: 1;
+    padding: 30px 40px;
+}
+
+
+.pet-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+.pet-item {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.pet-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pet-info-section {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 1;
+}
+
+.pet-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.pet-avatar.placeholder {
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pet-details {
+    flex: 1;
+}
+
+.pet-details h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.pet-details p {
+    font-size: 14px;
+    color: #999;
+}
+
+
+.status-badge {
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+.status-badge.available {
+    background-color: #007BFF;
+    color: white;
+}
+
+.status-badge.pending {
+    background-color: #007BFF;
+    color: white;
+}
+
+
+.pet-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+
+@media (max-width: 1024px) {
+    .pet-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .pet-info-section {
+        width: 100%;
+    }
+    
+    .status-badge {
+        margin-left: auto;
+        margin-right: 0;
+    }
+    
+    .pet-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .pet-management-content {
+        padding: 20px;
+    }
+    
+    .pet-avatar {
+        width: 50px;
+        height: 50px;
+    }
+}

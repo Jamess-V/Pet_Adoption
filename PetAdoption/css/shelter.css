@@ -1,0 +1,162 @@
+
+
+.shelter-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.schedule-wrapper {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+
+.form-section {
+    max-width: 500px;
+    width: 100%;
+    background-color: #f8f8f8;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #e8e8e8;
+    font-size: 14px;
+    color: #333;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #888;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    background-color: #ddd;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background-color: #FF6B6B;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #ff5252;
+}
+
+
+.dates-section {
+    flex: 0 0 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.date-slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.date-slot:hover {
+    border-color: #FF6B6B;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.date-label {
+    display: inline-block;
+    padding: 8px 20px;
+    background-color: #999;
+    color: #333;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-add-slot {
+    width: 36px;
+    height: 36px;
+    background-color: #007AFF;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-add-slot:hover {
+    background-color: #0056D2;
+    transform: scale(1.1);
+}
+
+.btn-add-slot:active {
+    transform: scale(0.95);
+}
+
+
+@media (max-width: 968px) {
+    .schedule-wrapper {
+        flex-direction: column;
+    }
+    
+    .dates-section {
+        flex: 1;
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .shelter-container {
+        padding: 0 15px;
+    }
+    
+    .form-section {
+        padding: 20px;
+    }
+    
+    .banner-section {
+        height: 150px;
+    }
+}

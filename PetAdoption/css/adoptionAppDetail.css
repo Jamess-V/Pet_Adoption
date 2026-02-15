@@ -1,0 +1,215 @@
+
+
+.app-detail-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    position: relative;
+}
+
+
+.action-notification {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    z-index: 1000;
+    color: white;
+}
+
+.action-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.action-notification.approve {
+    background-color: #28a745;
+}
+
+.action-notification.decline {
+    background-color: #dc3545;
+}
+
+.check-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+
+.detail-container {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    max-width: 900px;
+}
+
+.applicant-name {
+    font-size: 28px;
+    color: #333;
+    margin: 0 0 30px 0;
+    font-weight: 700;
+}
+
+
+.detail-section {
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.detail-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-item p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    line-height: 1.8;
+}
+
+.info-item strong {
+    color: #555;
+    font-weight: 600;
+}
+
+
+.section-title {
+    font-size: 20px;
+    color: #333;
+    margin: 0 0 20px 0;
+    font-weight: 600;
+}
+
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.section-content p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    line-height: 1.8;
+}
+
+.section-content strong {
+    color: #555;
+    font-weight: 600;
+}
+
+
+.experience-list {
+    margin: 10px 0 0 20px;
+    padding: 0;
+}
+
+.experience-list li {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+    justify-content: flex-start;
+}
+
+.approve-btn,
+.decline-btn {
+    padding: 12px 40px;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 140px;
+}
+
+.approve-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.approve-btn:hover {
+    background-color: #218838;
+}
+
+.decline-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.decline-btn:hover {
+    background-color: #c82333;
+}
+
+.approve-btn:active,
+.decline-btn:active {
+    transform: scale(0.98);
+}
+
+
+@media (max-width: 768px) {
+    .app-detail-content {
+        padding: 20px;
+    }
+
+    .detail-container {
+        padding: 25px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .applicant-name {
+        font-size: 24px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .approve-btn,
+    .decline-btn {
+        width: 100%;
+    }
+}

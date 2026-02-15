@@ -1,0 +1,156 @@
+
+
+.pet-report-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+}
+
+.pet-report-content h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+
+.pet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+.pet-item {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pet-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pet-item-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.pet-item-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0f0f0;
+}
+
+.pet-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.pet-item-info h3 {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+}
+
+.pet-breed {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.pet-item-datetime {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #666;
+}
+
+.calendar-icon {
+    width: 16px;
+    height: 16px;
+    color: #999;
+}
+
+.pet-item-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+.status-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-badge.available {
+    background-color: #007BFF;
+    color: white;
+}
+
+.status-badge.pending {
+    background-color: #007BFF;
+    color: white;
+}
+
+
+.view-detail-btn {
+    padding: 8px 20px;
+    background-color: white;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.view-detail-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #ccc;
+    color: #333;
+}
+
+.view-detail-btn:active {
+    transform: scale(0.98);
+}
+
+
+@media (max-width: 768px) {
+    .pet-report-content {
+        padding: 20px;
+    }
+
+    .pet-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .pet-item-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .view-detail-btn {
+        flex: 1;
+    }
+}

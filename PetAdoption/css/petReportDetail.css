@@ -1,0 +1,185 @@
+
+
+.pet-detail-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+}
+
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.detail-header h2 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+}
+
+
+.edit-btn {
+    padding: 10px 24px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.edit-btn:active {
+    transform: scale(0.98);
+}
+
+
+.detail-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    gap: 40px;
+}
+
+.detail-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.detail-right {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.pet-detail-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+
+.detail-section {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+
+.pet-name {
+    font-size: 28px;
+    color: #333;
+    margin: 0 0 5px 0;
+    font-weight: 700;
+}
+
+.pet-breed {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 15px 0;
+}
+
+
+.basic-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.basic-info p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    line-height: 1.8;
+}
+
+.basic-info strong {
+    color: #555;
+    font-weight: 600;
+}
+
+
+.section-title {
+    font-size: 18px;
+    color: #333;
+    margin: 0 0 15px 0;
+    font-weight: 600;
+}
+
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-content p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    line-height: 1.8;
+}
+
+.section-content strong {
+    color: #555;
+    font-weight: 600;
+}
+
+
+@media (max-width: 1024px) {
+    .detail-container {
+        flex-direction: column-reverse;
+    }
+
+    .detail-right {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .pet-detail-content {
+        padding: 20px;
+    }
+
+    .detail-container {
+        padding: 20px;
+    }
+
+    .basic-info {
+        grid-template-columns: 1fr;
+    }
+
+    .pet-name {
+        font-size: 24px;
+    }
+
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .edit-btn {
+        width: 100%;
+    }
+}
