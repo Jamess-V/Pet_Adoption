@@ -12,7 +12,7 @@
         
         <div class="error-message" id="errorMessage"></div>
 
-        <form method="POST" action="login.html" id="loginForm">
+        <form method="POST" action="login.php" id="loginForm">
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
@@ -49,5 +49,70 @@
             }
         }
     </script>
+
+    <?php
+    require_once '../config.php';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        $sql = "SELECT * FROM Manager WHERE Email = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            if ($password === $user['Password']) {
+                session_start();
+                $_SESSION['user_id'] = $user['Manager_id'];
+                $_SESSION['email'] = $user['Email'];
+                $_SESSION['user_type'] = 'manager';
+                header("Location: ../manager/manager.php");
+                exit();
+            }
+        }
+
+        $sql = "SELECT * FROM Staff WHERE Email = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            if ($password === $user['Password']) {
+                session_start();
+                $_SESSION['user_id'] = $user['Staff_id'];
+                $_SESSION['email'] = $user['Email'];
+                $_SESSION['user_type'] = 'staff';
+                header("Location: ../staff/staff.php");
+                exit();
+            }
+        }
+
+        $sql = "SELECT * FROM Users WHERE Email = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            if ($password === $user['Password']) {
+                session_start();
+                $_SESSION['user_id'] = $user['User_id'];
+                $_SESSION['email'] = $user['Email'];
+                $_SESSION['user_type'] = 'user';
+                header("Location: ../user/index.php");
+                exit();
+            }
+        }
+
+        echo "<script>document.getElementById('errorMessage').textContent = 'Invalid email or password';</script>";
+    }
+    ?>
 </body>
 </html>

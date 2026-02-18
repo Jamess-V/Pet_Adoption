@@ -50,7 +50,7 @@ CREATE TABLE Pets (
     DateOfBirth DATE,
     Color VARCHAR(50),
     Status ENUM('Available', 'Adopted', 'Pending', 'Medical Care') DEFAULT 'Available',
-    Housed_at INT,
+    Housed_at VARCHAR(255),
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE SET NULL
 );
 
