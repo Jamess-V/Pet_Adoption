@@ -82,7 +82,6 @@
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
 
-        // Validate inputs
         if (empty($firstname) || empty($lastname) || empty($email) || empty($password)) {
             $error_message = 'All fields are required';
         } elseif ($password !== $confirm_password) {
