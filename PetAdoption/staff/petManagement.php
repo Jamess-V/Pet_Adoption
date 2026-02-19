@@ -1,3 +1,23 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$staff_id = $_SESSION['user_id'];
+
+$sql = "SELECT * FROM Staff WHERE Staff_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $staff_id);
+$stmt->execute();
+$staff = $stmt->get_result()->fetch_assoc();
+
+$sql = "SELECT * FROM Pets ORDER BY Pet_Name";
+$result = $conn->query($sql);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,17 +37,17 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="staff.html">Home</a></li>
+                <li><a href="staff.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <span style="color: #333; margin-right: 15px;">Welcome, <?php echo htmlspecialchars($staff['Name']); ?></span>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
     <div class="staff-container">
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='staff.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staff.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="3" width="6" height="6" rx="1"/>
                     <rect x="11" y="3" width="6" height="6" rx="1"/>
@@ -49,7 +69,7 @@
                 </svg>
                 Medical Records
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='careLogs.html'">
+            <button class="sidebar-btn" onclick="window.location.href='careLogs.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="4" y="3" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="7" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -58,7 +78,7 @@
                 </svg>
                 Daily Pet Care Logs
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.html'">
+            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 9C11.7 9 13 7.7 13 6C13 4.3 11.7 3 10 3C8.3 3 7 4.3 7 6C7 7.7 8.3 9 10 9Z"/>
                     <path d="M10 11C6.7 11 4 13.7 4 17H16C16 13.7 13.3 11 10 11Z"/>
@@ -78,7 +98,7 @@
         <main class="pet-management-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="margin: 0; color: #333; font-size: 24px;">Pet Management</h2>
-                <button class="action-btn primary" onclick="window.location.href='addNewPet.html'" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                <button class="action-btn primary" onclick="window.location.href='addNewPet.php'" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
                     <svg viewBox="0 0 20 20">
                         <line x1="10" y1="5" x2="10" y2="15" stroke="currentColor" stroke-width="2"/>
                         <line x1="5" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="2"/>
@@ -94,10 +114,31 @@
                 <input type="text" placeholder="Search pets..." id="searchInput">
             </div>
             <div class="pet-list-container">
-                <div class="pet-item">
-                    <div class="pet-info-section">
-                        <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-avatar">
-                        <div class="pet-details">
+                <?php if($result && $result->num_rows > 0): ?>
+                    <?php while($pet = $result->fetch_assoc()): ?>
+                        <div class="pet-item" data-name="<?php echo strtolower($pet['Pet_Name']); ?>">
+                            <div class="pet-info-section">
+                                <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" class="pet-avatar" onerror="this.src='../Image/pet-placeholder.jpg'">
+                                <div class="pet-details">
+                                    <h3><?php echo htmlspecialchars($pet['Pet_Name']); ?></h3>
+                                    <p class="pet-breed"><?php echo htmlspecialchars($pet['Breed']); ?></p>
+                                    <p class="pet-meta"><?php echo htmlspecialchars($pet['Species']); ?> • <?php echo htmlspecialchars($pet['Gender']); ?></p>
+                                </div>
+                            </div>
+                            <div class="pet-actions">
+                                <span class="status-badge <?php echo strtolower($pet['Status']); ?>"><?php echo htmlspecialchars($pet['Status']); ?></span>
+                                <button class="icon-btn" onclick="window.location.href='editPet.php?pet_id=<?php echo $pet['Pet_id']; ?>'" title="Edit pet">
+                                    <svg viewBox="0 0 20 20">
+                                        <path d="M13.5 4.5L15.5 6.5L6 16H4V14L13.5 4.5Z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p style="text-align: center; padding: 40px; color: #999;">No pets found.</p>
+                <?php endif; ?>
+            </div>
                             <h3>Max</h3>
                             <p>Dog • Golden Retriever</p>
                         </div>
@@ -207,5 +248,21 @@
             </div>
         </main>
     </div>
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const petItems = document.querySelectorAll('.pet-item');
+            
+            petItems.forEach(item => {
+                const petName = item.dataset.name;
+                if(petName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

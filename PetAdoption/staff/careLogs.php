@@ -1,3 +1,40 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$staff_id = $_SESSION['user_id'];
+$date_filter = isset($_GET['date']) ? $_GET['date'] : 'today';
+$pet_filter = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : 0;
+$activity_filter = isset($_GET['activity']) ? $_GET['activity'] : 'all';
+
+$sql = "SELECT cl.*, p.Pet_Name, p.Species
+        FROM CareLogs cl
+        JOIN Pets p ON cl.Pet_id = p.Pet_id
+        WHERE 1=1 ";
+
+if($date_filter === 'today') {
+    $sql .= " AND DATE(cl.LogDate) = CURDATE()";
+}
+
+if($pet_filter > 0) {
+    $sql .= " AND cl.Pet_id = $pet_filter";
+}
+
+if($activity_filter !== 'all') {
+    $sql .= " AND cl.Activity = '" . $conn->real_escape_string($activity_filter) . "'";
+}
+
+$sql .= " ORDER BY cl.LogDate DESC, cl.Log_id DESC";
+$result = $conn->query($sql);
+
+$pets_sql = "SELECT Pet_id, Pet_Name FROM Pets ORDER BY Pet_Name";
+$pets_result = $conn->query($pets_sql);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,17 +53,16 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="staff.html">Home</a></li>
+                <li><a href="staff.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
     <div class="staff-container">
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='staff.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staff.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="3" width="6" height="6" rx="1"/>
                     <rect x="11" y="3" width="6" height="6" rx="1"/>
@@ -35,7 +71,7 @@
                 </svg>
                 Dashboard
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='petManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='petManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
                 </svg>
@@ -57,7 +93,7 @@
                 </svg>
                 Daily Pet Care Logs
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.html'">
+            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 9C11.7 9 13 7.7 13 6C13 4.3 11.7 3 10 3C8.3 3 7 4.3 7 6C7 7.7 8.3 9 10 9Z"/>
                     <path d="M10 11C6.7 11 4 13.7 4 17H16C16 13.7 13.3 11 10 11Z"/>
@@ -79,84 +115,50 @@
             <h2>Daily Pet Care Logs</h2>
 
             <div class="filters">
-                <button class="filter-btn active">Today</button>
-                <select class="filter-select">
-                    <option value="all">Pet</option>
-                    <option value="max">Max</option>
-                    <option value="luna">Luna</option>
-                    <option value="bella">Bella</option>
-                    <option value="charlie">Charlie</option>
+                <button class="filter-btn <?php echo $date_filter === 'today' ? 'active' : ''; ?>" onclick="window.location.href='careLogs.php?date=today'">Today</button>
+                <button class="filter-btn <?php echo $date_filter === 'all' ? 'active' : ''; ?>" onclick="window.location.href='careLogs.php?date=all'">All</button>
+                <select class="filter-select" onchange="window.location.href='careLogs.php?date=<?php echo $date_filter; ?>&pet_id=' + this.value">
+                    <option value="0">All Pets</option>
+                    <?php while($pet = $pets_result->fetch_assoc()): ?>
+                        <option value="<?php echo $pet['Pet_id']; ?>" <?php echo $pet_filter == $pet['Pet_id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($pet['Pet_Name']); ?>
+                        </option>
+                    <?php endwhile; ?>
                 </select>
-                <select class="filter-select">
-                    <option value="all">Activity Type</option>
-                    <option value="feeding">Feeding</option>
-                    <option value="medication">Medication</option>
-                    <option value="exercise">Exercise</option>
-                    <option value="grooming">Grooming</option>
-                    <option value="training">Training</option>
+                <select class="filter-select" onchange="window.location.href='careLogs.php?date=<?php echo $date_filter; ?>&pet_id=<?php echo $pet_filter; ?>&activity=' + this.value">
+                    <option value="all">All Activities</option>
+                    <option value="Feeding" <?php echo $activity_filter === 'Feeding' ? 'selected' : ''; ?>>Feeding</option>
+                    <option value="Medication" <?php echo $activity_filter === 'Medication' ? 'selected' : ''; ?>>Medication</option>
+                    <option value="Exercise" <?php echo $activity_filter === 'Exercise' ? 'selected' : ''; ?>>Exercise</option>
+                    <option value="Grooming" <?php echo $activity_filter === 'Grooming' ? 'selected' : ''; ?>>Grooming</option>
+                    <option value="Training" <?php echo $activity_filter === 'Training' ? 'selected' : ''; ?>>Training</option>
+                    <option value="Veterinary" <?php echo $activity_filter === 'Veterinary' ? 'selected' : ''; ?>>Veterinary</option>
                 </select>
             </div>
 
             <div class="logs-list">
-                <div class="log-card">
-                    <div class="log-content">
-                        <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-avatar">
-                        <div class="log-details">
-                            <h3>Max</h3>
-                            <p class="log-time">10:15 AM</p>
-                            <p class="log-description">Fed morning meal. Ate well, finished entire portion.</p>
+                <?php if($result->num_rows > 0): ?>
+                    <?php while($log = $result->fetch_assoc()): ?>
+                        <div class="log-card" onclick="window.location.href='careLogsDetail.php?log_id=<?php echo $log['Log_id']; ?>'" style="cursor: pointer;">
+                            <div class="log-content">
+                                <img src="../Image/<?php echo htmlspecialchars($log['Species']); ?>s/<?php echo strtolower($log['Species']); ?>01.jpg" 
+                                     alt="<?php echo htmlspecialchars($log['Pet_Name']); ?>" 
+                                     class="pet-avatar" 
+                                     onerror="this.src='../Image/pet-placeholder.jpg'">
+                                <div class="log-details">
+                                    <h3><?php echo htmlspecialchars($log['Pet_Name']); ?></h3>
+                                    <p class="log-time"><?php echo date('g:i A', strtotime($log['LogDate'])); ?></p>
+                                    <p class="log-description"><?php echo htmlspecialchars($log['Notes']); ?></p>
+                                </div>
+                            </div>
+                            <span class="activity-badge <?php echo strtolower($log['Activity']); ?>"><?php echo htmlspecialchars($log['Activity']); ?></span>
                         </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <div style="padding: 40px; text-align: center; color: #666;">
+                        <p>No care logs found for the selected filters.</p>
                     </div>
-                    <span class="activity-badge feeding">Feeding</span>
-                </div>
-
-                <div class="log-card">
-                    <div class="log-content">
-                        <img src="../Image/Scottish_cat.jpg" alt="Luna" class="pet-avatar">
-                        <div class="log-details">
-                            <h3>Luna</h3>
-                            <p class="log-time">09:45 AM</p>
-                            <p class="log-description">Administered prescribed antibiotics with food.</p>
-                        </div>
-                    </div>
-                    <span class="activity-badge medication">Medication</span>
-                </div>
-
-                <div class="log-card">
-                    <div class="log-content">
-                        <img src="../Image/Golden-Retriever.jpg" alt="Bella" class="pet-avatar">
-                        <div class="log-details">
-                            <h3>Bella</h3>
-                            <p class="log-time">09:00 AM</p>
-                            <p class="log-description">30-minute walk in the park. Very energetic and playful.</p>
-                        </div>
-                    </div>
-                    <span class="activity-badge exercise">Exercise</span>
-                </div>
-
-                <div class="log-card">
-                    <div class="log-content">
-                        <img src="../Image/dog.jpg" alt="Charlie" class="pet-avatar">
-                        <div class="log-details">
-                            <h3>Charlie</h3>
-                            <p class="log-time">08:30 AM</p>
-                            <p class="log-description">Bathed and groomed. Coat looking healthy and shiny.</p>
-                        </div>
-                    </div>
-                    <span class="activity-badge grooming">Grooming</span>
-                </div>
-
-                <div class="log-card">
-                    <div class="log-content">
-                        <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-avatar">
-                        <div class="log-details">
-                            <h3>Max</h3>
-                            <p class="log-time">07:45 AM</p>
-                            <p class="log-description">Basic obedience training session. Responded well to commands.</p>
-                        </div>
-                    </div>
-                    <span class="activity-badge training">Training</span>
-                </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>

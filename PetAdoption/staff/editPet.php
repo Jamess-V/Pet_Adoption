@@ -1,3 +1,64 @@
+<?php
+session_start();
+require_once '../config.php';
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$staff_id = $_SESSION['user_id'];
+$pet_id = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : 0;
+$message = '';
+$error = '';
+
+if(!$pet_id) {
+    header("Location: petManagement.php");
+    exit();
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $pet_name = trim($_POST['pet_name']);
+    $species = trim($_POST['species']);
+    $breed = trim($_POST['breed']);
+    $age = intval($_POST['age']);
+    $gender = $_POST['gender'];
+    $color = trim($_POST['color']);
+    $status = $_POST['status'];
+    
+    $birth_year = date('Y') - $age;
+    $date_of_birth = "$birth_year-01-01";
+    
+    $sql = "UPDATE Pets SET Pet_Name = ?, Species = ?, Breed = ?, Gender = ?, DateOfBirth = ?, Color = ?, Status = ? WHERE Pet_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssssssi", $pet_name, $species, $breed, $gender, $date_of_birth, $color, $status, $pet_id);
+    
+    if($stmt->execute()) {
+        echo "<script>
+            alert('Pet information updated successfully!');
+            window.location.href = 'petManagement.php';
+        </script>";
+        exit();
+    } else {
+        $error = 'Failed to update pet. Please try again.';
+    }
+}
+
+$sql = "SELECT * FROM Pets WHERE Pet_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $pet_id);
+$stmt->execute();
+$pet = $stmt->get_result()->fetch_assoc();
+
+if(!$pet) {
+    header("Location: petManagement.php");
+    exit();
+}
+
+$age = 0;
+if($pet['DateOfBirth']) {
+    $age = date_diff(date_create($pet['DateOfBirth']), date_create('now'))->y;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,17 +77,16 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="staff.html">Home</a></li>
+                <li><a href="staff.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
     <div class="staff-container">
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='staff.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staff.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="3" width="6" height="6" rx="1"/>
                     <rect x="11" y="3" width="6" height="6" rx="1"/>
@@ -48,7 +108,7 @@
                 </svg>
                 Medical Records
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='careLogs.html'">
+            <button class="sidebar-btn" onclick="window.location.href='careLogs.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="4" y="3" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="7" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -57,7 +117,7 @@
                 </svg>
                 Daily Pet Care Logs
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.html'">
+            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 9C11.7 9 13 7.7 13 6C13 4.3 11.7 3 10 3C8.3 3 7 4.3 7 6C7 7.7 8.3 9 10 9Z"/>
                     <path d="M10 11C6.7 11 4 13.7 4 17H16C16 13.7 13.3 11 10 11Z"/>
@@ -77,9 +137,15 @@
         </aside>
         <main class="edit-pet-content">
             <div class="edit-pet-form">
+                <?php if($error): ?>
+                    <div style="padding: 15px; margin-bottom: 20px; background: #f8d7da; color: #721c24; border-radius: 5px;">
+                        <?php echo htmlspecialchars($error); ?>
+                    </div>
+                <?php endif; ?>
+                
                 <div class="pet-photo-section">
                     <div class="pet-photo">
-                        <img src="../Image/Golden-Retriever.jpg" alt="Pet Photo" id="petPhoto">
+                        <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" id="petPhoto" onerror="this.src='../Image/pet-placeholder.jpg'">
                         <button class="photo-upload-btn">
                             <svg viewBox="0 0 24 24">
                                 <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
@@ -89,66 +155,58 @@
                     </div>
                 </div>
 
-                <form id="editPetForm">
+                <form id="editPetForm" method="POST" action="editPet.php?pet_id=<?php echo $pet_id; ?>">
                     <div class="form-row">
                         <div class="form-field">
                             <label>Name</label>
-                            <input type="text" value="Max" class="form-input">
+                            <input type="text" name="pet_name" value="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" class="form-input" required>
                         </div>
                         <div class="form-field">
                             <label>Species</label>
-                            <input type="text" value="Dog" class="form-input">
+                            <input type="text" name="species" value="<?php echo htmlspecialchars($pet['Species']); ?>" class="form-input" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-field">
                             <label>Breed</label>
-                            <input type="text" value="Golden Retriever" class="form-input">
+                            <input type="text" name="breed" value="<?php echo htmlspecialchars($pet['Breed']); ?>" class="form-input" required>
                         </div>
                         <div class="form-field">
-                            <label>Age</label>
-                            <input type="number" value="3" class="form-input">
+                            <label>Age (Years)</label>
+                            <input type="number" name="age" value="<?php echo $age; ?>" class="form-input" required min="0" max="30">
                         </div>
                     </div>
 
                     <div class="form-field full-width">
                         <label>Sex</label>
-                        <select class="form-select">
+                        <select name="gender" class="form-select" required>
                             <option value="">Select</option>
-                            <option value="male" selected>Male</option>
-                            <option value="female">Female</option>
+                            <option value="Male" <?php echo $pet['Gender'] == 'Male' ? 'selected' : ''; ?>>Male</option>
+                            <option value="Female" <?php echo $pet['Gender'] == 'Female' ? 'selected' : ''; ?>>Female</option>
                         </select>
                     </div>
 
                     <div class="form-row">
                         <div class="form-field">
                             <label>Color</label>
-                            <input type="text" value="Golden" class="form-input">
-                        </div>
-                        <div class="form-field">
-                            <label>Size</label>
-                            <select class="form-select">
-                                <option value="">Select</option>
-                                <option value="small">Small</option>
-                                <option value="medium">Medium</option>
-                                <option value="large" selected>Large</option>
-                            </select>
+                            <input type="text" name="color" value="<?php echo htmlspecialchars($pet['Color']); ?>" class="form-input" required>
                         </div>
                         <div class="form-field">
                             <label>Status</label>
-                            <select class="form-select">
+                            <select name="status" class="form-select" required>
                                 <option value="">Select</option>
-                                <option value="available" selected>Available</option>
-                                <option value="pending">Pending</option>
-                                <option value="adopted">Adopted</option>
+                                <option value="Available" <?php echo $pet['Status'] == 'Available' ? 'selected' : ''; ?>>Available</option>
+                                <option value="Pending" <?php echo $pet['Status'] == 'Pending' ? 'selected' : ''; ?>>Pending</option>
+                                <option value="Adopted" <?php echo $pet['Status'] == 'Adopted' ? 'selected' : ''; ?>>Adopted</option>
+                                <option value="Medical Care" <?php echo $pet['Status'] == 'Medical Care' ? 'selected' : ''; ?>>Medical Care</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-actions">
                         <button type="submit" class="save-btn">Save Changes</button>
-                        <button type="button" class="cancel-btn" onclick="window.location.href='petManagement.html'">Cancel</button>
+                        <button type="button" class="cancel-btn" onclick="window.location.href='petManagement.php'">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -169,11 +227,6 @@
                 };
                 reader.readAsDataURL(file);
             }
-        });
-        document.getElementById('editPetForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Pet information updated successfully!');
-            window.location.href = 'petManagement.html';
         });
     </script>
 </body>

@@ -1,3 +1,24 @@
+<?php
+session_start();
+require_once '../config.php';
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$staff_id = $_SESSION['user_id'];
+
+$sql = "SELECT * FROM Staff WHERE Staff_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $staff_id);
+$stmt->execute();
+$staff = $stmt->get_result()->fetch_assoc();
+
+$total_pets = $conn->query("SELECT COUNT(*) as count FROM Pets")->fetch_assoc()['count'];
+$available_pets = $conn->query("SELECT COUNT(*) as count FROM Pets WHERE Status = 'Available'")->fetch_assoc()['count'];
+$pending_appointments = $conn->query("SELECT COUNT(*) as count FROM ShelterAppointment WHERE Status = 'Pending'")->fetch_assoc()['count'];
+$today_logs = $conn->query("SELECT COUNT(*) as count FROM CareLogs WHERE Activity_date = CURDATE()")->fetch_assoc()['count'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,12 +36,12 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="staff.html">Home</a></li>
+                <li><a href="staff.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../login.html" class="btn btn-login">Login</a>
+            <span style="color: #333; margin-right: 15px;">Welcome, <?php echo htmlspecialchars($staff['Name']); ?></span>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
     <div class="staff-container">
@@ -34,7 +55,7 @@
                 </svg>
                 Dashboard
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='petManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='petManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
                 </svg>
@@ -47,7 +68,7 @@
                 </svg>
                 Medical Records
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='careLogs.html'">
+            <button class="sidebar-btn" onclick="window.location.href='careLogs.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="4" y="3" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="7" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -56,7 +77,7 @@
                 </svg>
                 Daily Pet Care Logs
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.html'">
+            <button class="sidebar-btn" onclick="window.location.href='shelterAppointment.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 9C11.7 9 13 7.7 13 6C13 4.3 11.7 3 10 3C8.3 3 7 4.3 7 6C7 7.7 8.3 9 10 9Z"/>
                     <path d="M10 11C6.7 11 4 13.7 4 17H16C16 13.7 13.3 11 10 11Z"/>
@@ -76,20 +97,20 @@
         <main class="dashboard-content">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">9</div>
+                    <div class="stat-icon"><?php echo $total_pets; ?></div>
                     <div class="stat-label">Total Pets</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">5</div>
+                    <div class="stat-icon"><?php echo $available_pets; ?></div>
                     <div class="stat-label">Available Pets</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">3</div>
+                    <div class="stat-icon"><?php echo $pending_appointments; ?></div>
                     <div class="stat-label">Pending Meet & Greets</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">2</div>
-                    <div class="stat-label">Pending Medical Updates</div>
+                    <div class="stat-icon"><?php echo $today_logs; ?></div>
+                    <div class="stat-label">Today's Care Logs</div>
                 </div>
             </div>
             <div class="quick-actions-section">

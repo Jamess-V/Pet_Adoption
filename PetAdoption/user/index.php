@@ -54,7 +54,7 @@ $result = $conn->query($sql);
                         <h2><?php echo htmlspecialchars($pet['Pet_Name']); ?></h2>
                         <p class="breed"><?php echo htmlspecialchars($pet['Breed']); ?></p>
                         <p class="details">
-                            <?php 
+                            <?php
                             if($pet['DateOfBirth']) {
                                 $age = date_diff(date_create($pet['DateOfBirth']), date_create('now'))->y;
                                 echo $age . ' Year' . ($age != 1 ? 's' : '');

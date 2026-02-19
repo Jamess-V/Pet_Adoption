@@ -1,3 +1,45 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$staff_id = $_SESSION['user_id'];
+
+$date_filter = isset($_GET['date_filter']) ? $_GET['date_filter'] : '';
+$status_filter = isset($_GET['status']) ? $_GET['status'] : '';
+$pet_filter = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : 0;
+
+$sql = "SELECT sa.*, p.Pet_Name, p.Species
+        FROM ShelterAppointment sa
+        JOIN Pets p ON sa.Pet_id = p.Pet_id
+        WHERE 1=1 ";
+
+if($date_filter === 'today') {
+    $sql .= " AND DATE(sa.AppointmentDateTime) = CURDATE()";
+} elseif($date_filter === 'week') {
+    $sql .= " AND WEEK(sa.AppointmentDateTime) = WEEK(CURDATE())";
+} elseif($date_filter === 'month') {
+    $sql .= " AND MONTH(sa.AppointmentDateTime) = MONTH(CURDATE())";
+}
+
+if($status_filter) {
+    $sql .= " AND sa.Status = '" . $conn->real_escape_string($status_filter) . "'";
+}
+
+if($pet_filter > 0) {
+    $sql .= " AND sa.Pet_id = $pet_filter";
+}
+
+$sql .= " ORDER BY sa.AppointmentDateTime DESC";
+$result = $conn->query($sql);
+
+$pets_sql = "SELECT Pet_id, Pet_Name, Species FROM Pets ORDER BY Pet_Name";
+$pets_result = $conn->query($pets_sql);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,18 +58,17 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="staff.html">Home</a></li>
+                <li><a href="staff.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
     <div class="staff-container">
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='staff.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staff.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="3" width="6" height="6" rx="1"/>
                     <rect x="11" y="3" width="6" height="6" rx="1"/>
@@ -36,7 +77,7 @@
                 </svg>
                 Dashboard
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='petManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='petManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
                 </svg>
@@ -49,7 +90,7 @@
                 </svg>
                 Medical Records
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='careLogs.html'">
+            <button class="sidebar-btn" onclick="window.location.href='careLogs.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="4" y="3" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="7" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -81,103 +122,79 @@
 
             <div class="filter-section">
                 <div class="filter-dropdown">
-                    <select id="dateFilter">
-                        <option value="">Date</option>
-                        <option value="today">Today</option>
-                        <option value="week">This Week</option>
-                        <option value="month">This Month</option>
-                        <option value="year">This Year</option>
+                    <select id="dateFilter" onchange="updateFilters()">
+                        <option value="">All Dates</option>
+                        <option value="today" <?php echo $date_filter === 'today' ? 'selected' : ''; ?>>Today</option>
+                        <option value="week" <?php echo $date_filter === 'week' ? 'selected' : ''; ?>>This Week</option>
+                        <option value="month" <?php echo $date_filter === 'month' ? 'selected' : ''; ?>>This Month</option>
                     </select>
                 </div>
                 <div class="filter-dropdown">
-                    <select id="statusFilter">
-                        <option value="">Status</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="pending">Pending</option>
-                        <option value="cancelled">Cancelled</option>
+                    <select id="statusFilter" onchange="updateFilters()">
+                        <option value="">All Status</option>
+                        <option value="Confirmed" <?php echo $status_filter === 'Confirmed' ? 'selected' : ''; ?>>Confirmed</option>
+                        <option value="Pending" <?php echo $status_filter === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+                        <option value="Cancelled" <?php echo $status_filter === 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                        <option value="Completed" <?php echo $status_filter === 'Completed' ? 'selected' : ''; ?>>Completed</option>
                     </select>
                 </div>
                 <div class="filter-dropdown">
-                    <select id="petFilter">
-                        <option value="">Pet</option>
-                        <option value="max">Dog</option>
-                        <option value="luna">Cat</option>
-                        <option value="charlie">Other</option>
+                    <select id="petFilter" onchange="updateFilters()">
+                        <option value="0">All Pets</option>
+                        <?php while($pet = $pets_result->fetch_assoc()): ?>
+                            <option value="<?php echo $pet['Pet_id']; ?>" <?php echo $pet_filter == $pet['Pet_id'] ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($pet['Pet_Name']) . ' (' . htmlspecialchars($pet['Species']) . ')'; ?>
+                            </option>
+                        <?php endwhile; ?>
                     </select>
                 </div>
             </div>
 
             <div class="appointments-list">
-                <div class="appointment-card">
-                    <div class="appointment-info">
-                        <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-avatar">
-                        <div class="appointment-details">
-                            <h3>Max</h3>
-                            <p class="owner-name">Bob</p>
-                            <div class="appointment-datetime">
-                                <svg viewBox="0 0 16 16" class="calendar-icon">
-                                    <rect x="2" y="3" width="12" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                                    <line x1="2" y1="6" x2="14" y2="6" stroke="currentColor" stroke-width="1.5"/>
-                                    <line x1="5" y1="1" x2="5" y2="4" stroke="currentColor" stroke-width="1.5"/>
-                                    <line x1="11" y1="1" x2="11" y2="4" stroke="currentColor" stroke-width="1.5"/>
-                                </svg>
-                                <span>Nov 28, 2026 • 2:00 PM</span>
+                <?php if($result->num_rows > 0): ?>
+                    <?php while($appointment = $result->fetch_assoc()): ?>
+                        <div class="appointment-card">
+                            <div class="appointment-info">
+                                <img src="../Image/<?php echo htmlspecialchars($appointment['Species']); ?>s/<?php echo strtolower($appointment['Species']); ?>01.jpg"
+                                     alt="<?php echo htmlspecialchars($appointment['Pet_Name']); ?>"
+                                     class="pet-avatar"
+                                     onerror="this.src='../Image/pet-placeholder.jpg'">
+                                <div class="appointment-details">
+                                    <h3><?php echo htmlspecialchars($appointment['Pet_Name']); ?></h3>
+                                    <p class="owner-name"><?php echo htmlspecialchars($appointment['VisitorName']); ?></p>
+                                    <div class="appointment-datetime">
+                                        <svg viewBox="0 0 16 16" class="calendar-icon">
+                                            <rect x="2" y="3" width="12" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                                            <line x1="2" y1="6" x2="14" y2="6" stroke="currentColor" stroke-width="1.5"/>
+                                            <line x1="5" y1="1" x2="5" y2="4" stroke="currentColor" stroke-width="1.5"/>
+                                            <line x1="11" y1="1" x2="11" y2="4" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                        <span><?php echo date('M d, Y • g:i A', strtotime($appointment['AppointmentDateTime'])); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="appointment-actions">
+                                <span class="status-badge <?php echo strtolower($appointment['Status']); ?>"><?php echo htmlspecialchars($appointment['Status']); ?></span>
+                                <button class="view-appointment-btn" onclick="window.location.href='shelterAppointmentDetail.php?appointment_id=<?php echo $appointment['Appointment_id']; ?>'">View Appointment</button>
                             </div>
                         </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <div style="padding: 40px; text-align: center; color: #666;">
+                        <p>No appointments found for the selected filters.</p>
                     </div>
-                    <div class="appointment-actions">
-                        <span class="status-badge confirmed">Confirmed</span>
-                        <button class="view-appointment-btn" onclick="window.location.href='shelterAppointmentDetail.html'">View Appointment</button>
-                    </div>
-                </div>
-
-                <div class="appointment-card">
-                    <div class="appointment-info">
-                        <img src="../Image/Cat2.jpg" alt="Luna" class="pet-avatar">
-                        <div class="appointment-details">
-                            <h3>Luna</h3>
-                            <p class="owner-name">Michael</p>
-                            <div class="appointment-datetime">
-                                <svg viewBox="0 0 16 16" class="calendar-icon">
-                                    <rect x="2" y="3" width="12" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                                    <line x1="2" y1="6" x2="14" y2="6" stroke="currentColor" stroke-width="1.5"/>
-                                    <line x1="5" y1="1" x2="5" y2="4" stroke="currentColor" stroke-width="1.5"/>
-                                    <line x1="11" y1="1" x2="11" y2="4" stroke="currentColor" stroke-width="1.5"/>
-                                </svg>
-                                <span>Nov 27, 2026 • 10:30 AM</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="appointment-actions">
-                        <span class="status-badge pending">Pending</span>
-                        <button class="view-appointment-btn" onclick="window.location.href='shelterAppointmentDetail.html'">View Appointment</button>
-                    </div>
-                </div>
-
-                <div class="appointment-card">
-                    <div class="appointment-info">
-                        <img src="../Image/german-shepherd-2-3.jpg" alt="Charlie" class="pet-avatar">
-                        <div class="appointment-details">
-                            <h3>Charlie</h3>
-                            <p class="owner-name">Mike</p>
-                            <div class="appointment-datetime">
-                                <svg viewBox="0 0 16 16" class="calendar-icon">
-                                    <rect x="2" y="3" width="12" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                                    <line x1="2" y1="6" x2="14" y2="6" stroke="currentColor" stroke-width="1.5"/>
-                                    <line x1="5" y1="1" x2="5" y2="4" stroke="currentColor" stroke-width="1.5"/>
-                                    <line x1="11" y1="1" x2="11" y2="4" stroke="currentColor" stroke-width="1.5"/>
-                                </svg>
-                                <span>Nov 29, 2026 • 3:30 PM</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="appointment-actions">
-                        <span class="status-badge confirmed">Confirmed</span>
-                        <button class="view-appointment-btn" onclick="window.location.href='shelterAppointmentDetail.html'">View Appointment</button>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>
+
+    <script>
+        function updateFilters() {
+            const dateFilter = document.getElementById('dateFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const petFilter = document.getElementById('petFilter').value;
+            window.location.href = 'shelterAppointment.php?date_filter=' + dateFilter + '&status=' + statusFilter + '&pet_id=' + petFilter;
+        }
+    </script>
 </body>
 </html>
