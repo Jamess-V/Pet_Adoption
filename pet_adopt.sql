@@ -54,17 +54,6 @@ CREATE TABLE Pets (
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE SET NULL
 );
 
-CREATE TABLE Adoption_Applications (
-    App_id INT PRIMARY KEY AUTO_INCREMENT,
-    Pet_id INT,
-    User_id INT,
-    Date_submitted DATE,
-    Status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Pet_id) REFERENCES Pets(Pet_id) ON DELETE CASCADE,
-    FOREIGN KEY (User_id) REFERENCES Users(User_id) ON DELETE CASCADE
-);
-
 CREATE TABLE Reviews (
     Review_id INT PRIMARY KEY AUTO_INCREMENT,
     App_id INT,
