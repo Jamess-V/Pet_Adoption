@@ -11,34 +11,26 @@ $staff_id = $_SESSION['user_id'];
 
 $date_filter = isset($_GET['date_filter']) ? $_GET['date_filter'] : '';
 $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
-$pet_filter = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : 0;
 
-$sql = "SELECT sa.*, p.Pet_Name, p.Species
+$sql = "SELECT sa.*, s.Shelter_name
         FROM ShelterAppointment sa
-        JOIN Pets p ON sa.Pet_id = p.Pet_id
+        LEFT JOIN Shelter s ON sa.Shelter_id = s.Shelter_id
         WHERE 1=1 ";
 
 if($date_filter === 'today') {
-    $sql .= " AND DATE(sa.AppointmentDateTime) = CURDATE()";
+    $sql .= " AND DATE(sa.Appointment_date) = CURDATE()";
 } elseif($date_filter === 'week') {
-    $sql .= " AND WEEK(sa.AppointmentDateTime) = WEEK(CURDATE())";
+    $sql .= " AND WEEK(sa.Appointment_date) = WEEK(CURDATE())";
 } elseif($date_filter === 'month') {
-    $sql .= " AND MONTH(sa.AppointmentDateTime) = MONTH(CURDATE())";
+    $sql .= " AND MONTH(sa.Appointment_date) = MONTH(CURDATE())";
 }
 
 if($status_filter) {
     $sql .= " AND sa.Status = '" . $conn->real_escape_string($status_filter) . "'";
 }
 
-if($pet_filter > 0) {
-    $sql .= " AND sa.Pet_id = $pet_filter";
-}
-
-$sql .= " ORDER BY sa.AppointmentDateTime DESC";
+$sql .= " ORDER BY sa.Appointment_date DESC, sa.Appointment_time DESC";
 $result = $conn->query($sql);
-
-$pets_sql = "SELECT Pet_id, Pet_Name, Species FROM Pets ORDER BY Pet_Name";
-$pets_result = $conn->query($pets_sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -138,16 +130,6 @@ $pets_result = $conn->query($pets_sql);
                         <option value="Completed" <?php echo $status_filter === 'Completed' ? 'selected' : ''; ?>>Completed</option>
                     </select>
                 </div>
-                <div class="filter-dropdown">
-                    <select id="petFilter" onchange="updateFilters()">
-                        <option value="0">All Pets</option>
-                        <?php while($pet = $pets_result->fetch_assoc()): ?>
-                            <option value="<?php echo $pet['Pet_id']; ?>" <?php echo $pet_filter == $pet['Pet_id'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($pet['Pet_Name']) . ' (' . htmlspecialchars($pet['Species']) . ')'; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
             </div>
 
             <div class="appointments-list">
@@ -155,13 +137,12 @@ $pets_result = $conn->query($pets_sql);
                     <?php while($appointment = $result->fetch_assoc()): ?>
                         <div class="appointment-card">
                             <div class="appointment-info">
-                                <img src="../Image/<?php echo htmlspecialchars($appointment['Species']); ?>s/<?php echo strtolower($appointment['Species']); ?>01.jpg"
-                                     alt="<?php echo htmlspecialchars($appointment['Pet_Name']); ?>"
-                                     class="pet-avatar"
-                                     onerror="this.src='../Image/pet-placeholder.jpg'">
                                 <div class="appointment-details">
-                                    <h3><?php echo htmlspecialchars($appointment['Pet_Name']); ?></h3>
-                                    <p class="owner-name"><?php echo htmlspecialchars($appointment['VisitorName']); ?></p>
+                                    <h3><?php echo htmlspecialchars($appointment['User_name']); ?></h3>
+                                    <p class="owner-name"><?php echo htmlspecialchars($appointment['User_email']); ?></p>
+                                    <?php if($appointment['Shelter_name']): ?>
+                                    <p class="shelter-name">Shelter: <?php echo htmlspecialchars($appointment['Shelter_name']); ?></p>
+                                    <?php endif; ?>
                                     <div class="appointment-datetime">
                                         <svg viewBox="0 0 16 16" class="calendar-icon">
                                             <rect x="2" y="3" width="12" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -169,7 +150,7 @@ $pets_result = $conn->query($pets_sql);
                                             <line x1="5" y1="1" x2="5" y2="4" stroke="currentColor" stroke-width="1.5"/>
                                             <line x1="11" y1="1" x2="11" y2="4" stroke="currentColor" stroke-width="1.5"/>
                                         </svg>
-                                        <span><?php echo date('M d, Y • g:i A', strtotime($appointment['AppointmentDateTime'])); ?></span>
+                                        <span><?php echo date('M d, Y', strtotime($appointment['Appointment_date'])) . ' • ' . date('g:i A', strtotime($appointment['Appointment_time'])); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -192,8 +173,7 @@ $pets_result = $conn->query($pets_sql);
         function updateFilters() {
             const dateFilter = document.getElementById('dateFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
-            const petFilter = document.getElementById('petFilter').value;
-            window.location.href = 'shelterAppointment.php?date_filter=' + dateFilter + '&status=' + statusFilter + '&pet_id=' + petFilter;
+            window.location.href = 'shelterAppointment.php?date_filter=' + dateFilter + '&status=' + statusFilter;
         }
     </script>
 </body>

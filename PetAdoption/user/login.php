@@ -30,7 +30,7 @@
 
             <div class="links">
                 <a href="#">Forgot Password</a>
-                <a href="signup.html">Register</a>
+                <a href="signup.php">Register</a>
             </div>
         </form>
     </div>

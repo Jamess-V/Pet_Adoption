@@ -20,7 +20,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['status'])) {
     
     $sql = "UPDATE ShelterAppointment SET Status = ?";
     if($notes) {
-        $sql .= ", Notes = ?";
+        $sql .= ", Note = ?";
     }
     $sql .= " WHERE Appointment_id = ?";
     
@@ -36,9 +36,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['status'])) {
     }
 }
 
-$sql = "SELECT sa.*, p.Pet_Name, p.Species, p.Breed
+$sql = "SELECT sa.*, s.Shelter_name
         FROM ShelterAppointment sa
-        JOIN Pets p ON sa.Pet_id = p.Pet_id
+        LEFT JOIN Shelter s ON sa.Shelter_id = s.Shelter_id
         WHERE sa.Appointment_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $appointment_id);
@@ -138,28 +138,24 @@ if(!$appointment) {
             
             <form method="POST" action="shelterAppointmentDetail.php?appointment_id=<?php echo $appointment_id; ?>">
             <div class="detail-card">
-                <div class="pet-info-header">
-                    <img src="../Image/<?php echo htmlspecialchars($appointment['Species']); ?>s/<?php echo strtolower($appointment['Species']); ?>01.jpg" 
-                         alt="<?php echo htmlspecialchars($appointment['Pet_Name']); ?>"
-                         class="pet-photo"
-                         onerror="this.src='../Image/pet-placeholder.jpg'">
-                    <div class="pet-basic-info">
-                        <h2><?php echo htmlspecialchars($appointment['Pet_Name']); ?></h2>
-                        <p class="breed"><?php echo htmlspecialchars($appointment['Breed']); ?></p>
-                    </div>
-                </div>
                 <div class="detail-section">
                     <label>Visitor Name</label>
-                    <p><?php echo htmlspecialchars($appointment['VisitorName']); ?></p>
+                    <p><?php echo htmlspecialchars($appointment['User_name']); ?></p>
                 </div>
                 <div class="detail-section">
                     <label>Contact Email</label>
-                    <p><?php echo htmlspecialchars($appointment['VisitorEmail']); ?></p>
+                    <p><?php echo htmlspecialchars($appointment['User_email']); ?></p>
                 </div>
                 <div class="detail-section">
                     <label>Contact Phone</label>
-                    <p><?php echo htmlspecialchars($appointment['VisitorPhone']); ?></p>
+                    <p><?php echo htmlspecialchars($appointment['User_phone'] ?? 'N/A'); ?></p>
                 </div>
+                <?php if($appointment['Shelter_name']): ?>
+                <div class="detail-section">
+                    <label>Shelter</label>
+                    <p><?php echo htmlspecialchars($appointment['Shelter_name']); ?></p>
+                </div>
+                <?php endif; ?>
                 <div class="detail-section">
                     <label>Requested Date & Time</label>
                     <div class="datetime-display">
@@ -169,7 +165,7 @@ if(!$appointment) {
                             <line x1="5" y1="1" x2="5" y2="4" stroke="currentColor" stroke-width="1.5"/>
                             <line x1="11" y1="1" x2="11" y2="4" stroke="currentColor" stroke-width="1.5"/>
                         </svg>
-                        <span><?php echo date('M d, Y • g:i A', strtotime($appointment['AppointmentDateTime'])); ?></span>
+                        <span><?php echo date('M d, Y', strtotime($appointment['Appointment_date'])) . ' • ' . date('g:i A', strtotime($appointment['Appointment_time'])); ?></span>
                     </div>
                 </div>
                 <div class="detail-section">
@@ -184,7 +180,7 @@ if(!$appointment) {
             </div>
             <div class="notes-section">
                 <label>Staff Notes</label>
-                <textarea name="notes" placeholder="Enter notes about the meet & greet..." rows="6"><?php echo htmlspecialchars($appointment['Notes'] ?? ''); ?></textarea>
+                <textarea name="notes" placeholder="Enter notes about the shelter appointment..." rows="6"><?php echo htmlspecialchars($appointment['Note'] ?? ''); ?></textarea>
             </div>
             <div class="action-buttons">
                 <button type="submit" class="detail-action-btn primary">Save Changes</button>

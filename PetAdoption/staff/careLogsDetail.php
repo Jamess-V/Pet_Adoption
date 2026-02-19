@@ -124,18 +124,18 @@ if(!$log) {
                     <div class="pet-header-info">
                         <h3><?php echo htmlspecialchars($log['Pet_Name']); ?></h3>
                         <p class="pet-type"><?php echo htmlspecialchars($log['Species']) . ' • ' . htmlspecialchars($log['Breed']); ?></p>
-                        <span class="activity-badge <?php echo strtolower($log['Activity']); ?>"><?php echo htmlspecialchars($log['Activity']); ?></span>
+                        <span class="activity-badge <?php echo strtolower($log['Activity_type']); ?>"><?php echo htmlspecialchars($log['Activity_type']); ?></span>
                     </div>
                 </div>
 
                 <div class="log-info-card">
                     <div class="info-row">
                         <div class="info-label">Date & Time</div>
-                        <div class="info-value"><?php echo date('F j, Y • g:i A', strtotime($log['LogDate'])); ?></div>
+                        <div class="info-value"><?php echo date('F j, Y', strtotime($log['Activity_date'])) . ' • ' . date('g:i A', strtotime($log['Activity_time'])); ?></div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">Activity Type</div>
-                        <div class="info-value"><?php echo htmlspecialchars($log['Activity']); ?></div>
+                        <div class="info-value"><?php echo htmlspecialchars($log['Activity_type']); ?></div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">Staff Member</div>
@@ -145,7 +145,7 @@ if(!$log) {
 
                 <div class="log-description-card">
                     <h4>Description</h4>
-                    <p><?php echo nl2br(htmlspecialchars($log['Notes'])); ?></p>
+                    <p><?php echo nl2br(htmlspecialchars($log['Description'])); ?></p>
                 </div>
 
                 <div class="log-actions">

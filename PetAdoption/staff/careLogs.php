@@ -18,7 +18,7 @@ $sql = "SELECT cl.*, p.Pet_Name, p.Species
         WHERE 1=1 ";
 
 if($date_filter === 'today') {
-    $sql .= " AND DATE(cl.LogDate) = CURDATE()";
+    $sql .= " AND DATE(cl.Activity_date) = CURDATE()";
 }
 
 if($pet_filter > 0) {
@@ -26,10 +26,10 @@ if($pet_filter > 0) {
 }
 
 if($activity_filter !== 'all') {
-    $sql .= " AND cl.Activity = '" . $conn->real_escape_string($activity_filter) . "'";
+    $sql .= " AND cl.Activity_type = '" . $conn->real_escape_string($activity_filter) . "'";
 }
 
-$sql .= " ORDER BY cl.LogDate DESC, cl.Log_id DESC";
+$sql .= " ORDER BY cl.Activity_date DESC, cl.Activity_time DESC, cl.Log_id DESC";
 $result = $conn->query($sql);
 
 $pets_sql = "SELECT Pet_id, Pet_Name FROM Pets ORDER BY Pet_Name";
@@ -142,16 +142,16 @@ $pets_result = $conn->query($pets_sql);
                         <div class="log-card" onclick="window.location.href='careLogsDetail.php?log_id=<?php echo $log['Log_id']; ?>'" style="cursor: pointer;">
                             <div class="log-content">
                                 <img src="../Image/<?php echo htmlspecialchars($log['Species']); ?>s/<?php echo strtolower($log['Species']); ?>01.jpg" 
-                                     alt="<?php echo htmlspecialchars($log['Pet_Name']); ?>" 
-                                     class="pet-avatar" 
+                                     alt="<?php echo htmlspecialchars($log['Pet_Name']); ?>"
+                                     class="pet-avatar"
                                      onerror="this.src='../Image/pet-placeholder.jpg'">
                                 <div class="log-details">
                                     <h3><?php echo htmlspecialchars($log['Pet_Name']); ?></h3>
-                                    <p class="log-time"><?php echo date('g:i A', strtotime($log['LogDate'])); ?></p>
-                                    <p class="log-description"><?php echo htmlspecialchars($log['Notes']); ?></p>
+                                    <p class="log-time"><?php echo date('g:i A', strtotime($log['Activity_time'])); ?></p>
+                                    <p class="log-description"><?php echo htmlspecialchars($log['Description']); ?></p>
                                 </div>
                             </div>
-                            <span class="activity-badge <?php echo strtolower($log['Activity']); ?>"><?php echo htmlspecialchars($log['Activity']); ?></span>
+                            <span class="activity-badge <?php echo strtolower($log['Activity_type']); ?>"><?php echo htmlspecialchars($log['Activity_type']); ?></span>
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
