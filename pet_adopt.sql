@@ -54,6 +54,18 @@ CREATE TABLE Pets (
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE SET NULL
 );
 
+CREATE TABLE Application (
+    App_id INT PRIMARY KEY AUTO_INCREMENT,
+    Pet_id INT,
+    User_id INT,
+    Application_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+    Answers TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (Pet_id) REFERENCES Pets(Pet_id) ON DELETE CASCADE,
+    FOREIGN KEY (User_id) REFERENCES Users(User_id) ON DELETE CASCADE
+);
+
 CREATE TABLE Reviews (
     Review_id INT PRIMARY KEY AUTO_INCREMENT,
     App_id INT,
@@ -62,7 +74,7 @@ CREATE TABLE Reviews (
     Review_date DATE,
     Comments TEXT,
     Rating INT CHECK (Rating >= 1 AND Rating <= 5),
-    FOREIGN KEY (App_id) REFERENCES Adoption_Applications(App_id) ON DELETE CASCADE,
+    FOREIGN KEY (App_id) REFERENCES Application (App_id) ON DELETE CASCADE,
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE SET NULL,
     FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id) ON DELETE SET NULL
 );
@@ -94,7 +106,7 @@ CREATE TABLE Associated_with (
     association_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (User_id, App_id),
     FOREIGN KEY (User_id) REFERENCES Users(User_id) ON DELETE CASCADE,
-    FOREIGN KEY (App_id) REFERENCES Adoption_Applications(App_id) ON DELETE CASCADE
+    FOREIGN KEY (App_id) REFERENCES Application(App_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Submits (
@@ -103,7 +115,7 @@ CREATE TABLE Submits (
     submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (User_id, App_id),
     FOREIGN KEY (User_id) REFERENCES Users(User_id) ON DELETE CASCADE,
-    FOREIGN KEY (App_id) REFERENCES Adoption_Applications(App_id) ON DELETE CASCADE
+    FOREIGN KEY (App_id) REFERENCES Application(App_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Manages (
