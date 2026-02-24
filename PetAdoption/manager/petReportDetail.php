@@ -1,3 +1,39 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$pet_id = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : 0;
+
+$pet_query = "SELECT * FROM Pets WHERE Pet_id = ?";
+$stmt = $conn->prepare($pet_query);
+$stmt->bind_param("i", $pet_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if($result->num_rows === 0) {
+    echo "Pet not found.";
+    exit();
+}
+
+$pet = $result->fetch_assoc();
+
+$species_folder = strtolower($pet['Species']);
+if($species_folder === 'dog') {
+    $species_folder = 'dogs';
+} elseif($species_folder === 'cat') {
+    $species_folder = 'cats';
+} elseif($species_folder === 'bird') {
+    $species_folder = 'birds';
+} elseif($species_folder === 'capybara') {
+    $species_folder = 'capybaras';
+}
+$pet_image = "../Image/$species_folder/" . ($pet['Photo'] ?? 'default.jpg');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +53,12 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="manager.html">Home</a></li>
+                <li><a href="manager.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <span style="color: white; margin-right: 15px;">Manager: <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Admin'); ?></span>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
@@ -30,7 +66,7 @@
     <div class="staff-container">
         
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='manager.html'">
+            <button class="sidebar-btn" onclick="window.location.href='manager.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="4" width="14" height="3" rx="0.5"/>
                     <rect x="3" y="9" width="14" height="3" rx="0.5"/>
@@ -44,7 +80,7 @@
                 </svg>
                 Pet Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.html'">
+            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -53,7 +89,7 @@
                 </svg>
                 Application Status
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='staffManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staffManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 2L3 6V10C3 14.5 6 18.5 10 19C14 18.5 17 14.5 17 10V6L10 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <polyline points="7,10 9,12 13,8" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -73,22 +109,22 @@
         <main class="pet-detail-content">
             <div class="detail-header">
                 <h2>Pet Details</h2>
-                <button class="edit-btn" onclick="window.location.href='editPetReport.html'">Edit</button>
+                <button class="edit-btn" onclick="window.location.href='editPetReport.php?pet_id=<?php echo $pet_id; ?>'">Edit</button>
             </div>
 
             <div class="detail-container">
                 <div class="detail-left">
                     
                     <div class="detail-section">
-                        <h3 class="pet-name">Max</h3>
-                        <p class="pet-breed">Golden Retriever</p>
+                        <h3 class="pet-name"><?php echo htmlspecialchars($pet['Pet_Name']); ?></h3>
+                        <p class="pet-breed"><?php echo htmlspecialchars($pet['Breed']); ?></p>
                         <div class="basic-info">
-                            <p><strong>Species:</strong> Dog</p>
-                            <p><strong>Gender:</strong> Male</p>
-                            <p><strong>Age:</strong> 2 years</p>
-                            <p><strong>Size:</strong> Large</p>
-                            <p><strong>Weight:</strong> 30kg</p>
-                            <p><strong>Color:</strong> Golden</p>
+                            <p><strong>Species:</strong> <?php echo htmlspecialchars($pet['Species']); ?></p>
+                            <p><strong>Gender:</strong> <?php echo htmlspecialchars($pet['Gender']); ?></p>
+                            <p><strong>Age:</strong> <?php echo $pet['DateOfBirth'] ? floor((time() - strtotime($pet['DateOfBirth'])) / (365*60*60*24)) : 'Unknown'; ?> years</p>
+                            <p><strong>Size:</strong> <?php echo htmlspecialchars($pet['Size'] ?? 'Unknown'); ?></p>
+                            <p><strong>Weight:</strong> <?php echo htmlspecialchars($pet['Weight'] ?? 'Unknown'); ?>kg</p>
+                            <p><strong>Color:</strong> <?php echo htmlspecialchars($pet['Color'] ?? 'Unknown'); ?></p>
                         </div>
                     </div>
 
@@ -96,10 +132,10 @@
                     <div class="detail-section">
                         <h3 class="section-title">Health & Medical</h3>
                         <div class="section-content">
-                            <p><strong>Vaccination Status:</strong> Fully vaccinated</p>
-                            <p><strong>Spayed/Neutered:</strong> Yes</p>
-                            <p><strong>Medical Conditions:</strong> None</p>
-                            <p><strong>Last Vet Checkup:</strong> 2 Nov 2025</p>
+                            <p><strong>Vaccination Status:</strong> <?php echo htmlspecialchars($pet['VaccinationStatus'] ?? 'Unknown'); ?></p>
+                            <p><strong>Spayed/Neutered:</strong> <?php echo ($pet['Neutered'] == 1) ? 'Yes' : 'No'; ?></p>
+                            <p><strong>Medical Conditions:</strong> <?php echo htmlspecialchars($pet['MedicalHistory'] ?? 'None'); ?></p>
+                            <p><strong>Last Vet Checkup:</strong> <?php echo $pet['LastCheckup'] ? date('d M Y', strtotime($pet['LastCheckup'])) : 'N/A'; ?></p>
                         </div>
                     </div>
 
@@ -107,10 +143,10 @@
                     <div class="detail-section">
                         <h3 class="section-title">Behavior & Temperament</h3>
                         <div class="section-content">
-                            <p><strong>Personality:</strong> Friendly, gentle, great with children, loves attention</p>
-                            <p><strong>Training:</strong> House-trained, knows basic commands (sit, stay, come)</p>
-                            <p><strong>Energy Level:</strong> Medium-high</p>
-                            <p><strong>Compatibility:</strong> Good with other dogs, unsure with cats</p>
+                            <p><strong>Personality:</strong> <?php echo htmlspecialchars($pet['Personality'] ?? 'Friendly and playful'); ?></p>
+                            <p><strong>Training:</strong> <?php echo htmlspecialchars($pet['TrainingLevel'] ?? 'Basic training'); ?></p>
+                            <p><strong>Energy Level:</strong> <?php echo htmlspecialchars($pet['EnergyLevel'] ?? 'Medium'); ?></p>
+                            <p><strong>Special Needs:</strong> <?php echo htmlspecialchars($pet['SpecialNeeds'] ?? 'None'); ?></p>
                         </div>
                     </div>
 
@@ -118,14 +154,14 @@
                     <div class="detail-section">
                         <h3 class="section-title">Shelter Information</h3>
                         <div class="section-content">
-                            <p><strong>Date of Rescue:</strong> 15 Aug 2023</p>
-                            <p><strong>Current Status:</strong> Available for adoption</p>
+                            <p><strong>Date Added:</strong> <?php echo $pet['AdmissionDate'] ? date('d M Y', strtotime($pet['AdmissionDate'])) : 'N/A'; ?></p>
+                            <p><strong>Current Status:</strong> <?php echo htmlspecialchars($pet['Status']); ?></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="detail-right">
-                    <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-detail-photo">
+                    <img src="<?php echo htmlspecialchars($pet_image); ?>" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" class="pet-detail-photo" onerror="this.src='../Image/default-pet.jpg'">
                 </div>
             </div>
         </main>

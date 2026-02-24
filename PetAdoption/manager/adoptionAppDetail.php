@@ -1,3 +1,48 @@
+<?php
+session_start();
+require_once '../config.php';
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$app_id = isset($_GET['app_id']) ? intval($_GET['app_id']) : 0;
+$message = '';
+
+if(!$app_id) {
+    header("Location: adoptionApp.php");
+    exit();
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
+    $new_status = ($action === 'approve') ? 'Approved' : 'Rejected';
+    
+    $sql = "UPDATE Application SET Status = ? WHERE Application_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $new_status, $app_id);
+    
+    if($stmt->execute()) {
+        header("Location: adoptionApp.php");
+        exit();
+    }
+}
+$sql = "SELECT a.*, u.Name as UserName, u.Email, u.Phone, u.Address, u.Bio,
+        p.Pet_Name, p.Species, p.Breed, p.Gender, p.Color
+        FROM Application a
+        JOIN Users u ON a.User_id = u.User_id
+        JOIN Pets p ON a.Pet_id = p.Pet_id
+        WHERE a.Application_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $app_id);
+$stmt->execute();
+$app = $stmt->get_result()->fetch_assoc();
+
+if(!$app) {
+    header("Location: adoptionApp.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +62,11 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="manager.html">Home</a></li>
+                <li><a href="manager.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
@@ -30,7 +74,7 @@
     <div class="staff-container">
         
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='manager.html'">
+            <button class="sidebar-btn" onclick="window.location.href='manager.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="4" width="14" height="3" rx="0.5"/>
                     <rect x="3" y="9" width="14" height="3" rx="0.5"/>
@@ -38,7 +82,7 @@
                 </svg>
                 Overall Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='petReport.html'">
+            <button class="sidebar-btn" onclick="window.location.href='petReport.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
                 </svg>
@@ -53,7 +97,7 @@
                 </svg>
                 Application Status
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='staffManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staffManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 2L3 6V10C3 14.5 6 18.5 10 19C14 18.5 17 14.5 17 10V6L10 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <polyline points="7,10 9,12 13,8" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -71,102 +115,95 @@
 
         
         <main class="app-detail-content">
-            
-            <div id="actionNotification" class="action-notification">
-                <svg viewBox="0 0 24 24" class="check-icon">
-                    <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span id="notificationText"></span>
-            </div>
-
             <div class="detail-container">
-                <h2 class="applicant-name">Lando Reyes</h2>
+                <h2 class="applicant-name"><?php echo htmlspecialchars($app['UserName']); ?></h2>
 
-                
                 <div class="detail-section">
+                    <h3 class="section-title">Application Status</h3>
+                    <div class="section-content">
+                        <p><strong>Current Status:</strong> <span class="status-badge <?php echo strtolower($app['Status']); ?>"><?php echo htmlspecialchars($app['Status']); ?></span></p>
+                        <p><strong>Application Date:</strong> <?php echo date('F j, Y', strtotime($app['Application_date'])); ?></p>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3 class="section-title">Pet Information</h3>
                     <div class="info-grid">
                         <div class="info-item">
-                            <p><strong>Age:</strong> 28</p>
+                            <p><strong>Pet Name:</strong> <?php echo htmlspecialchars($app['Pet_Name']); ?></p>
                         </div>
                         <div class="info-item">
-                            <p><strong>Gender:</strong> Male</p>
+                            <p><strong>Species:</strong> <?php echo htmlspecialchars($app['Species']); ?></p>
                         </div>
                         <div class="info-item">
-                            <p><strong>Email:</strong> lando.reyes@example.com</p>
+                            <p><strong>Breed:</strong> <?php echo htmlspecialchars($app['Breed']); ?></p>
                         </div>
                         <div class="info-item">
-                            <p><strong>Phone Number:</strong> +66 123456789</p>
+                            <p><strong>Gender:</strong> <?php echo htmlspecialchars($app['Gender']); ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3 class="section-title">Applicant Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <p><strong>Email:</strong> <?php echo htmlspecialchars($app['Email']); ?></p>
+                        </div>
+                        <div class="info-item">
+                            <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($app['Phone'] ?? 'N/A'); ?></p>
                         </div>
                         <div class="info-item full-width">
-                            <p><strong>Address:</strong> 123/45 Sukhumvit Rd, Khlong Tan Nuea, Watthana, Bangkok</p>
+                            <p><strong>Address:</strong> <?php echo htmlspecialchars($app['Address'] ?? 'N/A'); ?></p>
                         </div>
-                        <div class="info-item">
-                            <p><strong>Occupation:</strong> Software Developer at HorizonTech</p>
-                        </div>
-                        <div class="info-item">
-                            <p><strong>Marital Status:</strong> Single</p>
-                        </div>
+                        <?php if($app['Bio']): ?>
                         <div class="info-item full-width">
-                            <p><strong>Living Situation:</strong> Renting a pet-friendly, two-bedroom apartment</p>
+                            <p><strong>Bio:</strong> <?php echo nl2br(htmlspecialchars($app['Bio'])); ?></p>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
-                
                 <div class="detail-section">
-                    <h3 class="section-title">Motivation for Adoption</h3>
+                    <h3 class="section-title">Application Answers</h3>
                     <div class="section-content">
-                        <p><strong>Reason for Adoption:</strong> Seeking companionship and wants to provide a rescue animal with a stable, loving home</p>
-                        <p><strong>Preferred Pets:</strong> Medium-sized dog or calm cat; open to adopting seniors or special-needs animals</p>
-                        <p><strong>Commitment:</strong> Willing to attend training classes, follow adoption guidelines, do regular vet checkups</p>
+                        <?php 
+                        $answers = json_decode($app['Answers'], true);
+                        if($answers && is_array($answers)):
+                            $questions = [
+                                'hasYard' => 'Do you have a yard?',
+                                'homeType' => 'What type of home do you have?',
+                                'otherPets' => 'Do you have other pets?',
+                                'experience' => 'Previous pet experience',
+                                'hours' => 'Hours pet would be alone',
+                                'reason' => 'Reason for adoption'
+                            ];
+                            foreach($answers as $key => $value):
+                        ?>
+                            <p><strong><?php echo isset($questions[$key]) ? $questions[$key] : ucfirst($key); ?>:</strong> <?php echo htmlspecialchars($value); ?></p>
+                        <?php
+                            endforeach;
+                        else:
+                        ?>
+                            <p>No additional answers provided.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
 
-                
-                <div class="detail-section">
-                    <h3 class="section-title">Experience & Preparedness</h3>
-                    <div class="section-content">
-                        <p><strong>Previous Pet Experience:</strong> Owned a mixed-breed dog for 10 years (from puppy to senior), handled:</p>
-                        <ul class="experience-list">
-                            <li>End-of-life care</li>
-                            <li>Behavioral grooming</li>
-                            <li>Leash training</li>
-                            <li>Basic obedience commands</li>
-                            <li>Administering medication</li>
-                        </ul>
+                <?php if($app['Status'] === 'Pending'): ?>
+                <form method="POST" action="adoptionAppDetail.php?app_id=<?php echo $app_id; ?>">
+                    <div class="action-buttons">
+                        <button type="submit" name="action" value="approve" class="approve-btn">Approve Application</button>
+                        <button type="submit" name="action" value="reject" class="decline-btn">Reject Application</button>
                     </div>
-                </div>
-
+                </form>
+                <?php endif; ?>
                 
                 <div class="action-buttons">
-                    <button class="approve-btn" onclick="handleApprove()">Approve</button>
-                    <button class="decline-btn" onclick="handleDecline()">Decline</button>
+                    <button type="button" class="decline-btn" onclick="window.location.href='adoptionApp.php'">Back to List</button>
                 </div>
             </div>
         </main>
     </div>
-
-    <script>
-        function handleApprove() {
-            showNotification('Approved', 'approve');
-        }
-
-        function handleDecline() {
-            showNotification('Declined', 'decline');
-        }
-
-        function showNotification(message, type) {
-            const notification = document.getElementById('actionNotification');
-            const notificationText = document.getElementById('notificationText');
-            notificationText.textContent = message;
-            notification.className = 'action-notification show ' + type;
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    window.location.href = 'adoptionApp.html';
-                }, 300);
-            }, 3000);
-        }
-    </script>
 </body>
 </html>

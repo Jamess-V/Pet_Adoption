@@ -1,3 +1,53 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$manager_id = $_SESSION['user_id'];
+$stats = [];
+$sql = "SELECT COUNT(*) as total FROM Application WHERE YEAR(Application_date) = YEAR(CURDATE()) AND Status = 'Approved'";
+$result = $conn->query($sql);
+$stats['adoptions_year'] = $result->fetch_assoc()['total'];
+
+$sql = "SELECT p.Species, COUNT(*) as count
+        FROM Application a
+        JOIN Pets p ON a.Pet_id = p.Pet_id
+        WHERE a.Status = 'Approved'
+        GROUP BY p.Species
+        ORDER BY count DESC";
+$result = $conn->query($sql);
+$species_data = [];
+while($row = $result->fetch_assoc()) {
+    $species_data[] = $row;
+}
+
+$sql = "SELECT COUNT(*) as total FROM Application WHERE Status = 'Pending'";
+$result = $conn->query($sql);
+$stats['pending_apps'] = $result->fetch_assoc()['total'];
+$sql = "SELECT COUNT(*) as total FROM Pets";
+$result = $conn->query($sql);
+$stats['total_pets'] = $result->fetch_assoc()['total'];
+$sql = "SELECT COUNT(*) as total FROM Pets WHERE Status = 'Available'";
+$result = $conn->query($sql);
+$stats['available_pets'] = $result->fetch_assoc()['total'];
+$sql = "SELECT COUNT(*) as total FROM Staff";
+$result = $conn->query($sql);
+$stats['total_staff'] = $result->fetch_assoc()['total'];
+$sql = "SELECT
+        (SELECT COUNT(*) FROM Application WHERE Status = 'Approved') as approved,
+        (SELECT COUNT(*) FROM Application) as total";
+$result = $conn->query($sql);
+$rate_data = $result->fetch_assoc();
+$stats['success_rate'] = $rate_data['total'] > 0 ? round(($rate_data['approved'] / $rate_data['total']) * 100) : 0;
+
+$sql = "SELECT COUNT(*) as total FROM Application WHERE MONTH(Application_date) = MONTH(CURDATE()) AND YEAR(Application_date) = YEAR(CURDATE()) AND Status = 'Approved'";
+$result = $conn->query($sql);
+$stats['adoptions_month'] = $result->fetch_assoc()['total'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +67,11 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="manager.html">Home</a></li>
+                <li><a href="manager.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
@@ -38,13 +87,13 @@
                 </svg>
                 Overall Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='petReport.html'">
+            <button class="sidebar-btn" onclick="window.location.href='petReport.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
                 </svg>
                 Pet Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.html'">
+            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -53,7 +102,7 @@
                 </svg>
                 Application Status
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='staffManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staffManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 2L3 6V10C3 14.5 6 18.5 10 19C14 18.5 17 14.5 17 10V6L10 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <polyline points="7,10 9,12 13,8" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -72,87 +121,86 @@
         
         <main class="dashboard-content">
             <div class="dashboard-grid">
-                
                 <div class="dashboard-card">
-                    <div class="chart-placeholder bar-chart">
-                        <div class="bar" style="height: 60%;"></div>
-                        <div class="bar" style="height: 80%;"></div>
-                        <div class="bar" style="height: 85%;"></div>
-                        <div class="bar" style="height: 90%;"></div>
-                        <div class="bar" style="height: 75%;"></div>
-                        <div class="bar" style="height: 70%;"></div>
+                    <div class="stat-number" style="font-size: 48px; font-weight: bold; color: #007BFF; text-align: center; padding: 40px 0;">
+                        <?php echo $stats['adoptions_year']; ?>
                     </div>
                     <div class="chart-info">
-                        <h3>Monthly Adoptions</h3>
-                        <p>Total: 156 this year</p>
+                        <h3>Adoptions This Year</h3>
+                        <p>Total approved applications</p>
                     </div>
                 </div>
 
-                
                 <div class="dashboard-card">
-                    <div class="chart-placeholder pie-chart">
-                        <svg viewBox="0 0 100 100" class="pie">
-                            <circle cx="50" cy="50" r="40" fill="#007BFF" stroke="white" stroke-width="2"/>
-                            <path d="M 50 50 L 50 10 A 40 40 0 0 1 90 50 Z" fill="#28a745" stroke="white" stroke-width="2"/>
-                        </svg>
+                    <div style="padding: 20px;">
+                        <?php if(!empty($species_data)): ?>
+                            <?php foreach($species_data as $species): ?>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                                    <span style="font-weight: 500;"><?php echo htmlspecialchars($species['Species']); ?></span>
+                                    <span style="color: #007BFF; font-weight: bold;"><?php echo $species['count']; ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="text-align: center; color: #999;">No data available</p>
+                        <?php endif; ?>
                     </div>
                     <div class="chart-info">
-                        <h3>Adoption by Species</h3>
-                        <p>Dogs lead at 62%</p>
+                        <h3>Adoptions by Species</h3>
+                        <p>Breakdown by pet type</p>
                     </div>
                 </div>
 
-                
                 <div class="dashboard-card">
-                    <div class="chart-placeholder line-chart">
-                        <svg viewBox="0 0 200 80" class="trend-line">
-                            <polyline points="10,60 50,45 90,30 130,25 170,20" fill="none" stroke="#28a745" stroke-width="2"/>
-                            <circle cx="10" cy="60" r="3" fill="#28a745"/>
-                            <circle cx="50" cy="45" r="3" fill="#28a745"/>
-                            <circle cx="90" cy="30" r="3" fill="#28a745"/>
-                            <circle cx="130" cy="25" r="3" fill="#28a745"/>
-                            <circle cx="170" cy="20" r="3" fill="#28a745"/>
-                        </svg>
+                    <div class="stat-number" style="font-size: 48px; font-weight: bold; color: #FFC107; text-align: center; padding: 40px 0;">
+                        <?php echo $stats['pending_apps']; ?>
                     </div>
                     <div class="chart-info">
-                        <h3>Adoption Trend</h3>
-                        <p>↑ 23% from last year</p>
+                        <h3>Pending Applications</h3>
+                        <p>Awaiting review</p>
                     </div>
                 </div>
 
-                
                 <div class="dashboard-card">
-                    <div class="chart-placeholder bar-chart-horizontal">
-                        <div class="h-bar" style="width: 80%;">
-                            <span class="label">0-1yr</span>
-                        </div>
-                        <div class="h-bar" style="width: 60%;">
-                            <span class="label">1-3yr</span>
-                        </div>
-                        <div class="h-bar" style="width: 40%;">
-                            <span class="label">3-5yr</span>
-                        </div>
-                        <div class="h-bar" style="width: 30%;">
-                            <span class="label">5+yr</span>
-                        </div>
+                    <div style="padding: 20px; text-align: center;">
+                        <div style="font-size: 36px; font-weight: bold; color: #28a745;"><?php echo $stats['total_pets']; ?></div>
+                        <div style="font-size: 14px; color: #666; margin-top: 5px;">Total Pets</div>
+                        <div style="font-size: 28px; font-weight: bold; color: #007BFF; margin-top: 15px;"><?php echo $stats['available_pets']; ?></div>
+                        <div style="font-size: 14px; color: #666; margin-top: 5px;">Available</div>
                     </div>
                     <div class="chart-info">
-                        <h3>Age Group Adopted</h3>
-                        <p>Puppies most popular</p>
+                        <h3>Pet Inventory</h3>
+                        <p>Current shelter status</p>
                     </div>
                 </div>
 
-                
                 <div class="dashboard-card">
-                    <div class="chart-placeholder area-chart">
-                        <svg viewBox="0 0 200 80" class="area">
-                            <polygon points="0,80 0,60 50,55 100,50 150,45 200,40 200,80" fill="#E3F2FD" opacity="0.7"/>
-                            <polyline points="0,60 50,55 100,50 150,45 200,40" fill="none" stroke="#007BFF" stroke-width="2"/>
-                        </svg>
+                    <div class="stat-number" style="font-size: 48px; font-weight: bold; color: #28a745; text-align: center; padding: 40px 0;">
+                        <?php echo $stats['success_rate']; ?>%
                     </div>
                     <div class="chart-info">
                         <h3>Success Rate</h3>
-                        <p>94% adoption rate</p>
+                        <p>Application approval rate</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;">
+                            <span style="font-weight: 500;">This Month</span>
+                            <span style="color: #007BFF; font-size: 20px; font-weight: bold;"><?php echo $stats['adoptions_month']; ?></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;">
+                            <span style="font-weight: 500;">Total Staff</span>
+                            <span style="color: #007BFF; font-size: 20px; font-weight: bold;"><?php echo $stats['total_staff']; ?></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                            <span style="font-weight: 500;">This Year</span>
+                            <span style="color: #28a745; font-size: 20px; font-weight: bold;"><?php echo $stats['adoptions_year']; ?></span>
+                        </div>
+                    </div>
+                    <div class="chart-info">
+                        <h3>Quick Stats</h3>
+                        <p>Key metrics overview</p>
                     </div>
                 </div>
             </div>

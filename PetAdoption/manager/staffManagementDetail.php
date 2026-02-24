@@ -1,3 +1,37 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$staff_id = isset($_GET['staff_id']) ? intval($_GET['staff_id']) : 0;
+
+$staff_query = "SELECT * FROM Staff WHERE Staff_id = ?";
+$stmt = $conn->prepare($staff_query);
+$stmt->bind_param("i", $staff_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if($result->num_rows === 0) {
+    echo "Staff member not found.";
+    exit();
+}
+
+$staff = $result->fetch_assoc();
+
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_role'])) {
+    $new_position = $_POST['position'];
+    $update_query = "UPDATE Staff SET Position = ? WHERE Staff_id = ?";
+    $update_stmt = $conn->prepare($update_query);
+    $update_stmt->bind_param("si", $new_position, $staff_id);
+    $update_stmt->execute();
+    header("Location: staffManagementDetail.php?staff_id=$staff_id&updated=true");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +51,12 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="manager.html">Home</a></li>
+                <li><a href="manager.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <span style="color: white; margin-right: 15px;">Manager: <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Admin'); ?></span>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
@@ -30,7 +64,7 @@
     <div class="staff-container">
         
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='manager.html'">
+            <button class="sidebar-btn" onclick="window.location.href='manager.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="4" width="14" height="3" rx="0.5"/>
                     <rect x="3" y="9" width="14" height="3" rx="0.5"/>
@@ -38,13 +72,13 @@
                 </svg>
                 Overall Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='petReport.html'">
+            <button class="sidebar-btn" onclick="window.location.href='petReport.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
                 </svg>
                 Pet Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.html'">
+            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -72,7 +106,7 @@
         
         <main class="staff-detail-content">
             
-            <div id="saveNotification" class="save-notification">
+            <div id="saveNotification" class="save-notification" <?php echo isset($_GET['updated']) ? "style='display:block;'" : ""; ?>>
                 <svg viewBox="0 0 24 24" class="check-icon">
                     <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -81,21 +115,21 @@
 
             <div class="detail-header">
                 <h2>Staff Details</h2>
-                <button class="edit-btn" onclick="window.location.href='editStaffDetail.html'">Edit</button>
+                <button class="edit-btn" onclick="window.location.href='editStaffDetail.php?staff_id=<?php echo $staff_id; ?>'">Edit</button>
             </div>
 
             <div class="detail-container">
                 <div class="detail-left">
                     
                     <div class="detail-section">
-                        <h3 class="staff-name">Sarah Thompson</h3>
-                        <p class="staff-position">Shelter Manager</p>
+                        <h3 class="staff-name"><?php echo htmlspecialchars($staff['Name']); ?></h3>
+                        <p class="staff-position"><?php echo htmlspecialchars($staff['Position'] ?? 'Staff Member'); ?></p>
                         <div class="basic-info">
-                            <p><strong>Employee ID:</strong> EMP001</p>
-                            <p><strong>Email:</strong> Sarah@example.com</p>
-                            <p><strong>Phone Number:</strong> +66 123456789</p>
-                            <p><strong>Date of Birth:</strong> May 15, 1985</p>
-                            <p><strong>Address:</strong> 123 Main Street, Bangkok, Thailand</p>
+                            <p><strong>Employee ID:</strong> EMP<?php echo str_pad($staff['Staff_id'], 3, '0', STR_PAD_LEFT); ?></p>
+                            <p><strong>Email:</strong> <?php echo htmlspecialchars($staff['Email']); ?></p>
+                            <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($staff['PhoneNumber'] ?? 'N/A'); ?></p>
+                            <p><strong>Date of Birth:</strong> <?php echo $staff['DateOfBirth'] ? date('F d, Y', strtotime($staff['DateOfBirth'])) : 'N/A'; ?></p>
+                            <p><strong>Address:</strong> <?php echo htmlspecialchars($staff['Address'] ?? 'N/A'); ?></p>
                         </div>
                     </div>
 
@@ -103,11 +137,11 @@
                     <div class="detail-section">
                         <h3 class="section-title">Employment Information</h3>
                         <div class="section-content">
-                            <p><strong>Department:</strong> Operations</p>
-                            <p><strong>Employment Type:</strong> Full-time</p>
-                            <p><strong>Join Date:</strong> January 10, 2020</p>
-                            <p><strong>Work Schedule:</strong> Monday - Friday, 9:00 AM - 6:00 PM</p>
-                            <p><strong>Salary:</strong> $45,000/year</p>
+                            <p><strong>Department:</strong> <?php echo htmlspecialchars($staff['Department'] ?? 'Operations'); ?></p>
+                            <p><strong>Employment Type:</strong> <?php echo htmlspecialchars($staff['EmploymentType'] ?? 'Full-time'); ?></p>
+                            <p><strong>Join Date:</strong> <?php echo $staff['HireDate'] ? date('F d, Y', strtotime($staff['HireDate'])) : 'N/A'; ?></p>
+                            <p><strong>Work Schedule:</strong> <?php echo htmlspecialchars($staff['WorkSchedule'] ?? 'Monday - Friday'); ?></p>
+                            <p><strong>Salary:</strong> <?php echo isset($staff['Salary']) ? '$' . number_format($staff['Salary']) . '/year' : 'N/A'; ?></p>
                         </div>
                     </div>
 
@@ -115,9 +149,9 @@
                     <div class="detail-section">
                         <h3 class="section-title">Emergency Contact</h3>
                         <div class="section-content">
-                            <p><strong>Contact Name:</strong> John Thompson</p>
-                            <p><strong>Relationship:</strong> Spouse</p>
-                            <p><strong>Phone Number:</strong> +66 987654321</p>
+                            <p><strong>Contact Name:</strong> <?php echo htmlspecialchars($staff['EmergencyContactName'] ?? 'N/A'); ?></p>
+                            <p><strong>Relationship:</strong> <?php echo htmlspecialchars($staff['EmergencyContactRelation'] ?? 'N/A'); ?></p>
+                            <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($staff['EmergencyContactPhone'] ?? 'N/A'); ?></p>
                         </div>
                     </div>
                 </div>
@@ -126,20 +160,24 @@
                     
                     <div class="role-card">
                         <h3 class="role-title">Role & Assignment</h3>
-                        <div class="current-role">
-                            <p><strong>Current Role:</strong></p>
-                            <span class="role-badge manager">Manager</span>
-                        </div>
-                        <div class="role-options">
-                            <label><strong>Assign Role:</strong></label>
-                            <select id="roleSelect" class="role-select">
-                                <option value="manager" selected>Manager</option>
-                                <option value="senior-staff">Senior Staff</option>
-                                <option value="staff">Staff</option>
-                                <option value="volunteer">Volunteer</option>
-                            </select>
-                            <button class="assign-role-btn" onclick="assignRole()">Update Role</button>
-                        </div>
+                        <form method="POST">
+                            <div class="current-role">
+                                <p><strong>Current Role:</strong></p>
+                                <span class="role-badge manager"><?php echo htmlspecialchars($staff['Position'] ?? 'Staff'); ?></span>
+                            </div>
+                            <div class="role-options">
+                                <label><strong>Assign Role:</strong></label>
+                                <select name="position" class="role-select">
+                                    <option value="Manager" <?php echo ($staff['Position'] === 'Manager') ? 'selected' : ''; ?>>Manager</option>
+                                    <option value="Senior Staff" <?php echo ($staff['Position'] === 'Senior Staff') ? 'selected' : ''; ?>>Senior Staff</option>
+                                    <option value="Staff" <?php echo ($staff['Position'] === 'Staff') ? 'selected' : ''; ?>>Staff</option>
+                                    <option value="Volunteer" <?php echo ($staff['Position'] === 'Volunteer') ? 'selected' : ''; ?>>Volunteer</option>
+                                    <option value="Veterinary Technician" <?php echo ($staff['Position'] === 'Veterinary Technician') ? 'selected' : ''; ?>>Veterinary Technician</option>
+                                    <option value="Receptionist" <?php echo ($staff['Position'] === 'Receptionist') ? 'selected' : ''; ?>>Receptionist</option>
+                                </select>
+                                <button type="submit" name="update_role" class="assign-role-btn">Update Role</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

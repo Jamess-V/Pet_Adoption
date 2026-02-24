@@ -1,3 +1,15 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$staff_query = "SELECT * FROM Staff ORDER BY Staff_id DESC";
+$staff_result = $conn->query($staff_query);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +29,12 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="manager.html">Home</a></li>
+                <li><a href="manager.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <span style="color: white; margin-right: 15px;">Manager: <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Admin'); ?></span>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
@@ -30,7 +42,7 @@
     <div class="staff-container">
         
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='manager.html'">
+            <button class="sidebar-btn" onclick="window.location.href='manager.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="4" width="14" height="3" rx="0.5"/>
                     <rect x="3" y="9" width="14" height="3" rx="0.5"/>
@@ -38,13 +50,13 @@
                 </svg>
                 Overall Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='petReport.html'">
+            <button class="sidebar-btn" onclick="window.location.href='petReport.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 8.5 5.8 9.4 6.3 10.1C4.4 11 3 13 3 15.5V17H17V15.5C17 13 15.6 11 13.7 10.1C14.2 9.4 14.5 8.5 14.5 7.5C14.5 5 12.5 3 10 3Z"/>
                 </svg>
                 Pet Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.html'">
+            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -75,77 +87,24 @@
 
             
             <div class="staff-list">
-                
-                <div class="staff-card">
-                    <div class="card-content">
-                        <h3 class="staff-name">Sarah Thompson</h3>
-                        <p class="staff-position">Shelter Manager</p>
-                        <p class="staff-email">Sarah@example.com</p>
+                <?php if($staff_result && $staff_result->num_rows > 0): ?>
+                    <?php while($staff = $staff_result->fetch_assoc()): ?>
+                        <div class="staff-card">
+                            <div class="card-content">
+                                <h3 class="staff-name"><?php echo htmlspecialchars($staff['Name']); ?></h3>
+                                <p class="staff-position"><?php echo htmlspecialchars($staff['Position'] ?? 'Staff Member'); ?></p>
+                                <p class="staff-email"><?php echo htmlspecialchars($staff['Email']); ?></p>
+                            </div>
+                            <div class="card-actions">
+                                <button class="view-details-btn" onclick="window.location.href='staffManagementDetail.php?staff_id=<?php echo $staff['Staff_id']; ?>'">View More Details</button>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <div style="padding: 40px; text-align: center; color: #666;">
+                        <p>No staff members found.</p>
                     </div>
-                    <div class="card-actions">
-                        <button class="view-details-btn" onclick="window.location.href='staffManagementDetail.html'">View More Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="staff-card">
-                    <div class="card-content">
-                        <h3 class="staff-name">Daniel Kiev</h3>
-                        <p class="staff-position">Senior Animal Caretaker</p>
-                        <p class="staff-email">Daniel@example.com</p>
-                    </div>
-                    <div class="card-actions">
-                        <button class="view-details-btn" onclick="window.location.href='staffManagementDetail.html'">View More Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="staff-card">
-                    <div class="card-content">
-                        <h3 class="staff-name">Aisha Patel</h3>
-                        <p class="staff-position">Veterinary Technician</p>
-                        <p class="staff-email">Aisha@example.com</p>
-                    </div>
-                    <div class="card-actions">
-                        <button class="view-details-btn" onclick="window.location.href='staffManagementDetail.html'">View More Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="staff-card">
-                    <div class="card-content">
-                        <h3 class="staff-name">Marcus Lee</h3>
-                        <p class="staff-position">Receptionist</p>
-                        <p class="staff-email">Marcus@example.com</p>
-                    </div>
-                    <div class="card-actions">
-                        <button class="view-details-btn" onclick="window.location.href='staffManagementDetail.html'">View More Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="staff-card">
-                    <div class="card-content">
-                        <h3 class="staff-name">Kevin Brooks</h3>
-                        <p class="staff-position">Animal Care Assistant</p>
-                        <p class="staff-email">Kevin@example.com</p>
-                    </div>
-                    <div class="card-actions">
-                        <button class="view-details-btn" onclick="window.location.href='staffManagementDetail.html'">View More Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="staff-card">
-                    <div class="card-content">
-                        <h3 class="staff-name">Emily Clarke</h3>
-                        <p class="staff-position">Shelter Volunteer</p>
-                        <p class="staff-email">Emily@example.com</p>
-                    </div>
-                    <div class="card-actions">
-                        <button class="view-details-btn" onclick="window.location.href='staffManagementDetail.html'">View More Details</button>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>

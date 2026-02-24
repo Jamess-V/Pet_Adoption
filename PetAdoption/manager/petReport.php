@@ -1,3 +1,14 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
+    header("Location: ../user/login.php");
+    exit();
+}
+$sql = "SELECT * FROM Pets ORDER BY Pet_id DESC";
+$result = $conn->query($sql);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +28,11 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="manager.html">Home</a></li>
+                <li><a href="manager.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
@@ -30,7 +40,7 @@
     <div class="staff-container">
         
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='manager.html'">
+            <button class="sidebar-btn" onclick="window.location.href='manager.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="4" width="14" height="3" rx="0.5"/>
                     <rect x="3" y="9" width="14" height="3" rx="0.5"/>
@@ -44,7 +54,7 @@
                 </svg>
                 Pet Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.html'">
+            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -53,7 +63,7 @@
                 </svg>
                 Application Status
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='staffManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staffManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 2L3 6V10C3 14.5 6 18.5 10 19C14 18.5 17 14.5 17 10V6L10 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <polyline points="7,10 9,12 13,8" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -73,199 +83,40 @@
         <main class="pet-report-content">
             <h2>Pet Report</h2>
 
-            
             <div class="pet-list">
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/Golden-Retriever.jpg" alt="Max" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Max</h3>
-                            <p class="pet-breed">Golden Retriever</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Dec 15, 2025</span>
+                <?php if($result->num_rows > 0): ?>
+                    <?php while($pet = $result->fetch_assoc()): ?>
+                        <div class="pet-item">
+                            <div class="pet-item-left">
+                                <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" 
+                                     alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" 
+                                     class="pet-item-photo" 
+                                     onerror="this.src='../Image/pet-placeholder.jpg'">
+                                <div class="pet-item-info">
+                                    <h3><?php echo htmlspecialchars($pet['Pet_Name']); ?></h3>
+                                    <p class="pet-breed"><?php echo htmlspecialchars($pet['Breed']); ?></p>
+                                    <div class="pet-item-datetime">
+                                        <svg viewBox="0 0 24 24" class="calendar-icon">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                        <span>Gender: <?php echo htmlspecialchars($pet['Gender']); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pet-item-right">
+                                <span class="status-badge <?php echo strtolower(str_replace(' ', '-', $pet['Status'])); ?>"><?php echo htmlspecialchars($pet['Status']); ?></span>
+                                <button class="view-detail-btn" onclick="window.location.href='petReportDetail.php?pet_id=<?php echo $pet['Pet_id']; ?>'">View Details</button>
                             </div>
                         </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <div style="padding: 40px; text-align: center; color: #666;">
+                        <p>No pets found.</p>
                     </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge available">Available</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/Cat2.jpg" alt="Mittens" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Mittens</h3>
-                            <p class="pet-breed">Persian</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Jan 3, 2026</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge pending">Pending Adoption</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/cats/cat03.jpg" alt="Whiskers" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Whiskers</h3>
-                            <p class="pet-breed">Domestic Shorthair</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Nov 20, 2025</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge available">Available</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/dog.jpg" alt="Bella" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Bella</h3>
-                            <p class="pet-breed">Golden Retriever Mix</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Oct 5, 2025</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge available">Available</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/german-shepherd-2-3.jpg" alt="Rocky" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Rocky</h3>
-                            <p class="pet-breed">German Shepherd</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Sep 18, 2025</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge pending">Pending Adoption</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/dogs/dog03.jpg" alt="Luna" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Luna</h3>
-                            <p class="pet-breed">Labrador Retriever</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Jan 10, 2026</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge available">Available</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/Scottish_cat.jpg" alt="Mochi" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Mochi</h3>
-                            <p class="pet-breed">British Shorthair</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Dec 28, 2025</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge available">Available</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
-
-                
-                <div class="pet-item">
-                    <div class="pet-item-left">
-                        <img src="../Image/german-shepherd-2-3.jpg" alt="Rusty" class="pet-item-photo">
-                        <div class="pet-item-info">
-                            <h3>Rusty</h3>
-                            <p class="pet-breed">German Shepherd Mix</p>
-                            <div class="pet-item-datetime">
-                                <svg viewBox="0 0 24 24" class="calendar-icon">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <span>Added: Aug 22, 2025</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pet-item-right">
-                        <span class="status-badge pending">Pending Adoption</span>
-                        <button class="view-detail-btn" onclick="window.location.href='petReportDetail.html'">View Details</button>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>

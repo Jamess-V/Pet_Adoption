@@ -1,3 +1,60 @@
+<?php
+session_start();
+require_once '../config.php';
+
+if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
+    header("Location: ../user/login.php");
+    exit();
+}
+
+$pet_id = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : 0;
+
+$pet_query = "SELECT * FROM Pets WHERE Pet_id = ?";
+$stmt = $conn->prepare($pet_query);
+$stmt->bind_param("i", $pet_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if($result->num_rows === 0) {
+    echo "Pet not found.";
+    exit();
+}
+
+$pet = $result->fetch_assoc();
+
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $pet_name = $_POST['petName'];
+    $breed = $_POST['breed'];
+    $species = $_POST['species'];
+    $gender = $_POST['gender'];
+    $dateofbirth = $_POST['dateOfBirth'];
+    $size = $_POST['size'];
+    $weight = $_POST['weight'];
+    $color = $_POST['color'];
+    $vaccination_status = $_POST['vaccination'];
+    $neutered = ($_POST['neutered'] === 'Yes') ? 1 : 0;
+    $medical_history = $_POST['medical'];
+    $last_checkup = $_POST['lastCheckup'];
+    $personality = $_POST['personality'];
+    $training_level = $_POST['training'];
+    $energy_level = $_POST['energy'];
+    $special_needs = $_POST['compatibility'];
+    $admission_date = $_POST['rescueDate'];
+    $status = $_POST['status'];
+    
+    $update_query = "UPDATE Pets SET Pet_Name=?, Breed=?, Species=?, Gender=?, DateOfBirth=?, Size=?, Weight=?, Color=?, 
+                     VaccinationStatus=?, Neutered=?, MedicalHistory=?, LastCheckup=?, Personality=?, TrainingLevel=?, 
+                     EnergyLevel=?, SpecialNeeds=?, AdmissionDate=?, Status=? WHERE Pet_id=?";
+    $update_stmt = $conn->prepare($update_query);
+    $update_stmt->bind_param("ssssssssssssssssssi", $pet_name, $breed, $species, $gender, $dateofbirth, $size, $weight, $color,
+                              $vaccination_status, $neutered, $medical_history, $last_checkup, $personality, $training_level,
+                              $energy_level, $special_needs, $admission_date, $status, $pet_id);
+    $update_stmt->execute();
+    
+    header("Location: petReportDetail.php?pet_id=$pet_id");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,12 +74,12 @@
                 <img src="../Image/PetLogo.png" alt="Pet Adoption Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="manager.html">Home</a></li>
+                <li><a href="manager.php">Home</a></li>
             </ul>
         </div>
         <div class="nav-right">
-            <a href="../user/signup.html" class="btn btn-signup">Sign Up</a>
-            <a href="../user/login.html" class="btn btn-login">Login</a>
+            <span style="color: white; margin-right: 15px;">Manager: <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Admin'); ?></span>
+            <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
 
@@ -30,7 +87,7 @@
     <div class="staff-container">
         
         <aside class="sidebar">
-            <button class="sidebar-btn" onclick="window.location.href='manager.html'">
+            <button class="sidebar-btn" onclick="window.location.href='manager.php'">
                 <svg viewBox="0 0 20 20">
                     <rect x="3" y="4" width="14" height="3" rx="0.5"/>
                     <rect x="3" y="9" width="14" height="3" rx="0.5"/>
@@ -44,7 +101,7 @@
                 </svg>
                 Pet Report
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.html'">
+            <button class="sidebar-btn" onclick="window.location.href='adoptionApp.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -53,7 +110,7 @@
                 </svg>
                 Application Status
             </button>
-            <button class="sidebar-btn" onclick="window.location.href='staffManagement.html'">
+            <button class="sidebar-btn" onclick="window.location.href='staffManagement.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M10 2L3 6V10C3 14.5 6 18.5 10 19C14 18.5 17 14.5 17 10V6L10 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <polyline points="7,10 9,12 13,8" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -82,12 +139,12 @@
             <div class="edit-header">
                 <h2>Edit Pet Details</h2>
                 <div class="edit-actions">
-                    <button class="cancel-btn" onclick="window.location.href='petReportDetail.html'">Cancel</button>
-                    <button class="save-btn" onclick="saveChanges(event)">Save Changes</button>
+                    <button class="cancel-btn" onclick="window.location.href='petReportDetail.php?pet_id=<?php echo $pet_id; ?>'">Cancel</button>
+                    <button class="save-btn" onclick="document.getElementById('editForm').submit()">Save Changes</button>
                 </div>
             </div>
 
-            <form class="edit-form">
+            <form method="POST" class="edit-form" id="editForm">
                 <div class="form-container">
                     <div class="form-left">
                         
@@ -96,55 +153,55 @@
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="petName">Pet Name</label>
-                                    <input type="text" id="petName" name="petName" value="Max" required>
+                                    <input type="text" id="petName" name="petName" value="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="breed">Breed</label>
-                                    <input type="text" id="breed" name="breed" value="Golden Retriever" required>
+                                    <input type="text" id="breed" name="breed" value="<?php echo htmlspecialchars($pet['Breed']); ?>" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="species">Species</label>
                                     <select id="species" name="species" required>
-                                        <option value="Dog" selected>Dog</option>
-                                        <option value="Cat">Cat</option>
-                                        <option value="Bird">Bird</option>
-                                        <option value="Rabbit">Rabbit</option>
-                                        <option value="Other">Other</option>
+                                        <option value="Dog" <?php echo ($pet['Species'] === 'Dog') ? 'selected' : ''; ?>>Dog</option>
+                                        <option value="Cat" <?php echo ($pet['Species'] === 'Cat') ? 'selected' : ''; ?>>Cat</option>
+                                        <option value="Bird" <?php echo ($pet['Species'] === 'Bird') ? 'selected' : ''; ?>>Bird</option>
+                                        <option value="Capybara" <?php echo ($pet['Species'] === 'Capybara') ? 'selected' : ''; ?>>Capybara</option>
+                                        <option value="Other" <?php echo ($pet['Species'] === 'Other') ? 'selected' : ''; ?>>Other</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="gender">Gender</label>
                                     <select id="gender" name="gender" required>
-                                        <option value="Male" selected>Male</option>
-                                        <option value="Female">Female</option>
+                                        <option value="Male" <?php echo ($pet['Gender'] === 'Male') ? 'selected' : ''; ?>>Male</option>
+                                        <option value="Female" <?php echo ($pet['Gender'] === 'Female') ? 'selected' : ''; ?>>Female</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="age">Age</label>
-                                    <input type="text" id="age" name="age" value="2 years" required>
+                                    <label for="dateOfBirth">Date of Birth</label>
+                                    <input type="date" id="dateOfBirth" name="dateOfBirth" value="<?php echo $pet['DateOfBirth']; ?>" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="size">Size</label>
                                     <select id="size" name="size" required>
-                                        <option value="Small">Small</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Large" selected>Large</option>
+                                        <option value="Small" <?php echo ($pet['Size'] === 'Small') ? 'selected' : ''; ?>>Small</option>
+                                        <option value="Medium" <?php echo ($pet['Size'] === 'Medium') ? 'selected' : ''; ?>>Medium</option>
+                                        <option value="Large" <?php echo ($pet['Size'] === 'Large') ? 'selected' : ''; ?>>Large</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="weight">Weight</label>
-                                    <input type="text" id="weight" name="weight" value="30kg" required>
+                                    <label for="weight">Weight (kg)</label>
+                                    <input type="text" id="weight" name="weight" value="<?php echo htmlspecialchars($pet['Weight'] ?? ''); ?>" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="color">Color</label>
-                                    <input type="text" id="color" name="color" value="Golden" required>
+                                    <input type="text" id="color" name="color" value="<?php echo htmlspecialchars($pet['Color'] ?? ''); ?>" required>
                                 </div>
                             </div>
                         </div>
@@ -156,28 +213,28 @@
                                 <div class="form-group">
                                     <label for="vaccination">Vaccination Status</label>
                                     <select id="vaccination" name="vaccination" required>
-                                        <option value="Fully vaccinated" selected>Fully vaccinated</option>
-                                        <option value="Partially vaccinated">Partially vaccinated</option>
-                                        <option value="Not vaccinated">Not vaccinated</option>
+                                        <option value="Fully vaccinated" <?php echo ($pet['VaccinationStatus'] === 'Fully vaccinated') ? 'selected' : ''; ?>>Fully vaccinated</option>
+                                        <option value="Partially vaccinated" <?php echo ($pet['VaccinationStatus'] === 'Partially vaccinated') ? 'selected' : ''; ?>>Partially vaccinated</option>
+                                        <option value="Not vaccinated" <?php echo ($pet['VaccinationStatus'] === 'Not vaccinated') ? 'selected' : ''; ?>>Not vaccinated</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="neutered">Spayed/Neutered</label>
                                     <select id="neutered" name="neutered" required>
-                                        <option value="Yes" selected>Yes</option>
-                                        <option value="No">No</option>
+                                        <option value="Yes" <?php echo ($pet['Neutered'] == 1) ? 'selected' : ''; ?>>Yes</option>
+                                        <option value="No" <?php echo ($pet['Neutered'] == 0) ? 'selected' : ''; ?>>No</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group full-width">
                                     <label for="medical">Medical Conditions</label>
-                                    <input type="text" id="medical" name="medical" value="None">
+                                    <input type="text" id="medical" name="medical" value="<?php echo htmlspecialchars($pet['MedicalHistory'] ?? 'None'); ?>">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="lastCheckup">Last Vet Checkup</label>
-                                    <input type="date" id="lastCheckup" name="lastCheckup" value="2025-11-02" required>
+                                    <input type="date" id="lastCheckup" name="lastCheckup" value="<?php echo $pet['LastCheckup'] ?? ''; ?>" required>
                                 </div>
                             </div>
                         </div>
@@ -188,27 +245,27 @@
                             <div class="form-grid">
                                 <div class="form-group full-width">
                                     <label for="personality">Personality</label>
-                                    <textarea id="personality" name="personality" rows="3">Friendly, gentle, great with children, loves attention</textarea>
+                                    <textarea id="personality" name="personality" rows="3"><?php echo htmlspecialchars($pet['Personality'] ?? ''); ?></textarea>
                                 </div>
 
                                 <div class="form-group full-width">
                                     <label for="training">Training</label>
-                                    <textarea id="training" name="training" rows="2">House-trained, knows basic commands (sit, stay, come)</textarea>
+                                    <textarea id="training" name="training" rows="2"><?php echo htmlspecialchars($pet['TrainingLevel'] ?? ''); ?></textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="energy">Energy Level</label>
                                     <select id="energy" name="energy" required>
-                                        <option value="Low">Low</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Medium-high" selected>Medium-high</option>
-                                        <option value="High">High</option>
+                                        <option value="Low" <?php echo ($pet['EnergyLevel'] === 'Low') ? 'selected' : ''; ?>>Low</option>
+                                        <option value="Medium" <?php echo ($pet['EnergyLevel'] === 'Medium') ? 'selected' : ''; ?>>Medium</option>
+                                        <option value="Medium-high" <?php echo ($pet['EnergyLevel'] === 'Medium-high') ? 'selected' : ''; ?>>Medium-high</option>
+                                        <option value="High" <?php echo ($pet['EnergyLevel'] === 'High') ? 'selected' : ''; ?>>High</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group full-width">
-                                    <label for="compatibility">Compatibility</label>
-                                    <input type="text" id="compatibility" name="compatibility" value="Good with other dogs, unsure with cats">
+                                    <label for="compatibility">Special Needs</label>
+                                    <input type="text" id="compatibility" name="compatibility" value="<?php echo htmlspecialchars($pet['SpecialNeeds'] ?? ''); ?>">
                                 </div>
                             </div>
                         </div>
@@ -218,18 +275,18 @@
                             <h3 class="section-title">Shelter Information</h3>
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label for="rescueDate">Date of Rescue</label>
-                                    <input type="date" id="rescueDate" name="rescueDate" value="2023-08-15" required>
+                                    <label for="rescueDate">Date Added to Shelter</label>
+                                    <input type="date" id="rescueDate" name="rescueDate" value="<?php echo $pet['AdmissionDate'] ?? ''; ?>" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="status">Current Status</label>
                                     <select id="status" name="status" required>
-                                        <option value="Available for adoption" selected>Available for adoption</option>
-                                        <option value="Pending adoption">Pending adoption</option>
-                                        <option value="Adopted">Adopted</option>
-                                        <option value="Medical care">Medical care</option>
-                                        <option value="Not available">Not available</option>
+                                        <option value="Available" <?php echo ($pet['Status'] === 'Available') ? 'selected' : ''; ?>>Available</option>
+                                        <option value="Pending" <?php echo ($pet['Status'] === 'Pending') ? 'selected' : ''; ?>>Pending Adoption</option>
+                                        <option value="Adopted" <?php echo ($pet['Status'] === 'Adopted') ? 'selected' : ''; ?>>Adopted</option>
+                                        <option value="Medical care" <?php echo ($pet['Status'] === 'Medical care') ? 'selected' : ''; ?>>Medical Care</option>
+                                        <option value="Not available" <?php echo ($pet['Status'] === 'Not available') ? 'selected' : ''; ?>>Not Available</option>
                                     </select>
                                 </div>
                             </div>
