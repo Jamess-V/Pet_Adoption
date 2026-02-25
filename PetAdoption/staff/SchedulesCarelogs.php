@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once '../config.php';
 
@@ -34,8 +38,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pets_sql = "SELECT Pet_id, Pet_Name, Species, Breed FROM Pets ORDER BY Pet_Name";
 $pets_result = $conn->query($pets_sql);
 
+if (!$pets_result) {
+    die("Pets query failed: " . $conn->error);
+}
+
 $staff_sql = "SELECT Staff_id, Name FROM Staff ORDER BY Name";
 $staff_result = $conn->query($staff_sql);
+
+if (!$staff_result) {
+    die("Staff query failed: " . $conn->error);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
