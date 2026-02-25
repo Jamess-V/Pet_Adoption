@@ -116,7 +116,7 @@ $today_logs = $conn->query("SELECT COUNT(*) as count FROM CareLogs WHERE Activit
             <div class="quick-actions-section">
                 <h3>Quick Actions</h3>
                 <div class="quick-actions">
-                    <button class="action-btn primary" onclick="window.location.href='addNewPet.html'">
+                    <button class="action-btn primary" onclick="window.location.href='addNewPet.php'">
                         <svg viewBox="0 0 20 20">
                             <line x1="10" y1="5" x2="10" y2="15" stroke="currentColor" stroke-width="2"/>
                             <line x1="5" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="2"/>
