@@ -18,6 +18,7 @@ $total_pets = $conn->query("SELECT COUNT(*) as count FROM Pets")->fetch_assoc()[
 $available_pets = $conn->query("SELECT COUNT(*) as count FROM Pets WHERE Status = 'Available'")->fetch_assoc()['count'];
 $pending_appointments = $conn->query("SELECT COUNT(*) as count FROM ShelterAppointment WHERE Status = 'Pending'")->fetch_assoc()['count'];
 $today_logs = $conn->query("SELECT COUNT(*) as count FROM CareLogs WHERE Activity_date = CURDATE()")->fetch_assoc()['count'];
+$pending_applications = $conn->query("SELECT COUNT(*) as count FROM Application WHERE Status = 'Pending'")->fetch_assoc()['count'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,7 +85,7 @@ $today_logs = $conn->query("SELECT COUNT(*) as count FROM CareLogs WHERE Activit
                 </svg>
                 Meet & Greet
             </button>
-            <button class="sidebar-btn">
+            <button class="sidebar-btn" onclick="window.location.href='AppView.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -111,6 +112,10 @@ $today_logs = $conn->query("SELECT COUNT(*) as count FROM CareLogs WHERE Activit
                 <div class="stat-card">
                     <div class="stat-icon"><?php echo $today_logs; ?></div>
                     <div class="stat-label">Today's Care Logs</div>
+                </div>
+                <div class="stat-card" onclick="window.location.href='AppView.php'" style="cursor: pointer;">
+                    <div class="stat-icon"><?php echo $pending_applications; ?></div>
+                    <div class="stat-label">Pending Applications</div>
                 </div>
             </div>
             <div class="quick-actions-section">
