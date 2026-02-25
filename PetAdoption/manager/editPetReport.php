@@ -330,7 +330,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => {
-                    window.location.href = 'petReportDetail.html';
+                    window.location.href = 'petReportDetail.php';
                 }, 300);
             }, 3000);
         }

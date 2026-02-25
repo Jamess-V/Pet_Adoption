@@ -11,7 +11,7 @@ const pets = [
 ];
 
 function adoptPet() {
-    window.location.href = "adoptPet.html";
+    window.location.href = "adoptPet.php";
 }
 
 function filterPets() {

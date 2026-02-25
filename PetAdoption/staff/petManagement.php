@@ -126,13 +126,12 @@ $result = $conn->query($sql);
                                 </div>
                             </div>
                             <div class="pet-actions">
-                                <button class="action-btn secondary" onclick="window.location.href='editPet.php?pet_id=<?php echo $pet['Pet_id']; ?>'" style="padding: 10px 20px; background-color: #9999; color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                    <svg viewBox="0 0 20 20">
+                                <span class="status-badge <?php echo strtolower($pet['Status']); ?>"><?php echo htmlspecialchars($pet['Status']); ?></span>
+                                <button class="edit-btn" onclick="window.location.href='editPet.php?pet_id=<?php echo $pet['Pet_id']; ?>'" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #007BFF;">
                                         <path d="M13.5 4.5L15.5 6.5L6 16H4V14L13.5 4.5Z"/>
                                     </svg>
                                     Edit
                                 </button>
-                                <span class="status-badge <?php echo strtolower($pet['Status']); ?>"><?php echo htmlspecialchars($pet['Status']); ?></span>
                             </div>
                         </div>
                     <?php endwhile; ?>
