@@ -19,15 +19,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $activity_time = $_POST['activity_time'];
     $activity_type = $_POST['activity_type'];
     $description = $_POST['description'];
+    $staff_id = intval($_POST['staff_id']);
     
     $update_sql = "UPDATE CareLogs SET
                    Activity_date = ?,
                    Activity_time = ?,
                    Activity_type = ?,
-                   Description = ?
+                   Description = ?,
+                   Staff_id = ?
                    WHERE Log_id = ?";
     $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("ssssi", $activity_date, $activity_time, $activity_type, $description, $log_id);
+    $stmt->bind_param("ssssii", $activity_date, $activity_time, $activity_type, $description, $staff_id, $log_id);
     
     if($stmt->execute()) {
         $_SESSION['success_message'] = "Care log updated successfully!";
@@ -52,6 +54,10 @@ if(!$log) {
     header("Location: careLogs.php");
     exit();
 }
+
+// Fetch all staff members for dropdown
+$staff_sql = "SELECT Staff_id, Name FROM Staff ORDER BY Name";
+$staff_result = $conn->query($staff_sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -185,7 +191,21 @@ if(!$log) {
                         </div>
                         <div class="info-row">
                             <div class="info-label">Staff Member</div>
-                            <div class="info-value"><?php echo htmlspecialchars($log['Staff_Name'] ?? 'Unknown'); ?> (Read-only)</div>
+                            <div class="info-value">
+                                <select name="staff_id" required class="form-input">
+                                    <?php
+                                    if($staff_result && $staff_result->num_rows > 0):
+                                        while($staff = $staff_result->fetch_assoc()):
+                                    ?>
+                                        <option value="<?php echo $staff['Staff_id']; ?>" <?php echo $log['Staff_id'] == $staff['Staff_id'] ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($staff['Name']); ?>
+                                        </option>
+                                    <?php
+                                        endwhile;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
