@@ -97,19 +97,19 @@ $pending_applications = $conn->query("SELECT COUNT(*) as count FROM Application 
         </aside>
         <main class="dashboard-content">
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='petManagement.php'" style="cursor: pointer;">
                     <div class="stat-icon"><?php echo $total_pets; ?></div>
                     <div class="stat-label">Total Pets</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='petManagement.php'" style="cursor: pointer;">
                     <div class="stat-icon"><?php echo $available_pets; ?></div>
                     <div class="stat-label">Available Pets</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='shelterAppointment.php'" style="cursor: pointer;">
                     <div class="stat-icon"><?php echo $pending_appointments; ?></div>
                     <div class="stat-label">Pending Meet & Greets</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="window.location.href='careLogs.php'" style="cursor: pointer;">
                     <div class="stat-icon"><?php echo $today_logs; ?></div>
                     <div class="stat-label">Today's Care Logs</div>
                 </div>
@@ -128,7 +128,7 @@ $pending_applications = $conn->query("SELECT COUNT(*) as count FROM Application 
                         </svg>
                         Add New Pet
                     </button>
-                    <button class="action-btn secondary">
+                    <button class="action-btn secondary" onclick="window.location.href='SchedulesCarelogs.php'">
                         <svg viewBox="0 0 20 20">
                             <rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
                             <line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.5"/>
