@@ -104,7 +104,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="adoption-content">
             
             <div class="pet-info">
-                <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" onerror="this.src='../Image/pet-placeholder.jpg'">
+                <img src="../Image/<?php echo strtolower($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" onerror="this.src='../Image/pet-placeholder.jpg'">
                 <h2><?php echo htmlspecialchars($pet['Pet_Name']); ?></h2>
                 <p class="breed"><?php echo htmlspecialchars($pet['Breed']); ?></p>
                 <p class="details">

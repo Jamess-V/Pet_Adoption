@@ -65,7 +65,7 @@ $adoptions = $stmt->get_result();
                 <?php if($adoptions && $adoptions->num_rows > 0): ?>
                     <?php while($adoption = $adoptions->fetch_assoc()): ?>
                         <div class="adopted-pet-card">
-                            <img src="../Image/<?php echo htmlspecialchars($adoption['Species']); ?>s/<?php echo strtolower($adoption['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($adoption['Pet_Name']); ?>" onerror="this.src='../Image/pet-placeholder.jpg'">
+                            <img src="../Image/<?php echo strtolower($adoption['Species']); ?>s/<?php echo strtolower($adoption['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($adoption['Pet_Name']); ?>" onerror="this.src='../Image/pet-placeholder.jpg'">
                             <div class="pet-details">
                                 <h3><?php echo htmlspecialchars($adoption['Pet_Name']); ?></h3>
                                 <p>Breed: <?php echo htmlspecialchars($adoption['Breed']); ?></p>

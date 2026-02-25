@@ -20,13 +20,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pet_name = trim($_POST['pet_name']);
     $species = trim($_POST['species']);
     $breed = trim($_POST['breed']);
-    $age = intval($_POST['age']);
+    $date_of_birth = $_POST['date_of_birth'];   
     $gender = $_POST['gender'];
     $color = trim($_POST['color']);
     $status = $_POST['status'];
-    
-    $birth_year = date('Y') - $age;
-    $date_of_birth = "$birth_year-01-01";
     
     $sql = "UPDATE Pets SET Pet_Name = ?, Species = ?, Breed = ?, Gender = ?, DateOfBirth = ?, Color = ?, Status = ? WHERE Pet_id = ?";
     $stmt = $conn->prepare($sql);
@@ -145,7 +142,7 @@ if($pet['DateOfBirth']) {
                 
                 <div class="pet-photo-section">
                     <div class="pet-photo">
-                        <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" id="petPhoto" onerror="this.src='../Image/pet-placeholder.jpg'">
+                        <img src="../Image/<?php echo strtolower($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" id="petPhoto" onerror="this.src='../Image/pet-placeholder.jpg'">
                         <button class="photo-upload-btn">
                             <svg viewBox="0 0 24 24">
                                 <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
@@ -173,8 +170,8 @@ if($pet['DateOfBirth']) {
                             <input type="text" name="breed" value="<?php echo htmlspecialchars($pet['Breed']); ?>" class="form-input" required>
                         </div>
                         <div class="form-field">
-                            <label>Age (Years)</label>
-                            <input type="number" name="age" value="<?php echo $age; ?>" class="form-input" required min="0" max="30">
+                            <label>Date of Birth</label>
+                            <input type="date" name="date_of_birth" value="<?php echo $pet['DateOfBirth']; ?>" class="form-input" required>
                         </div>
                     </div>
 

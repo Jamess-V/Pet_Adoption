@@ -32,7 +32,7 @@ if($species_folder === 'dog') {
 } elseif($species_folder === 'capybara') {
     $species_folder = 'capybaras';
 }
-$pet_image = "../Image/$species_folder/" . ($pet['Photo'] ?? 'default.jpg');
+$pet_image = "../Image/$species_folder/" . strtolower($pet['Species']) . "01.jpg";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,7 +121,19 @@ $pet_image = "../Image/$species_folder/" . ($pet['Photo'] ?? 'default.jpg');
                         <div class="basic-info">
                             <p><strong>Species:</strong> <?php echo htmlspecialchars($pet['Species']); ?></p>
                             <p><strong>Gender:</strong> <?php echo htmlspecialchars($pet['Gender']); ?></p>
-                            <p><strong>Age:</strong> <?php echo $pet['DateOfBirth'] ? floor((time() - strtotime($pet['DateOfBirth'])) / (365*60*60*24)) : 'Unknown'; ?> years</p>
+                            <p><strong>Date of Birth:</strong> <?php echo $pet['DateOfBirth'] ? date('d M Y', strtotime($pet['DateOfBirth'])) : 'Unknown'; ?></p>
+                            <p><strong>Age:</strong> 
+                                <?php 
+                                if($pet['DateOfBirth']) {
+                                    $dob = new DateTime($pet['DateOfBirth']);
+                                    $now = new DateTime();
+                                    $interval = $now->diff($dob);
+                                    echo $interval->y . " years, " . $interval->m . " months";
+                                } else {
+                                    echo 'Unknown';
+                                }
+                                ?>
+                            </p>
                             <p><strong>Size:</strong> <?php echo htmlspecialchars($pet['Size'] ?? 'Unknown'); ?></p>
                             <p><strong>Weight:</strong> <?php echo htmlspecialchars($pet['Weight'] ?? 'Unknown'); ?>kg</p>
                             <p><strong>Color:</strong> <?php echo htmlspecialchars($pet['Color'] ?? 'Unknown'); ?></p>

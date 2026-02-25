@@ -15,22 +15,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pet_name = trim($_POST['pet_name']);
     $species = trim($_POST['species']);
     $breed = trim($_POST['breed']);
-    $age = intval($_POST['age']);
+    $date_of_birth = $_POST['date_of_birth'];
     $gender = $_POST['gender'];
     $color = trim($_POST['color']);
     $status = $_POST['status'];
     
-    $birth_year = date('Y') - $age;
-    $date_of_birth = "$birth_year-01-01";
-    
     $shelter_result = $conn->query("SELECT Shelter_id FROM Shelter LIMIT 1");
     $shelter_id = $shelter_result->fetch_assoc()['Shelter_id'] ?? 1;
     
-    $sql = "INSERT INTO Pets (Pet_Name, Species, Breed, Gender, DateOfBirth, Color, Status, Shelter_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO Pets (Pet_Name, Species, Breed, Gender, DateOfBirth, Color, Status, Shelter_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssssssi", $pet_name, $species, $breed, $gender, $date_of_birth, $color, $status, $shelter_id);
-    
+        
     if($stmt->execute()) {
         echo "<script>
             alert('New pet added successfully!');
@@ -156,8 +152,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="text" name="breed" placeholder="Enter breed" class="form-input" required>
                         </div>
                         <div class="form-field">
-                            <label>Age (Years)</label>
-                            <input type="number" name="age" placeholder="Enter age" class="form-input" required min="0" max="30">
+                            <label>Date of Birth</label>
+                            <input type="date" name="date_of_birth" class="form-input" required>
                         </div>
                     </div>
 

@@ -50,7 +50,7 @@ $result = $conn->query($sql);
             <?php if($result && $result->num_rows > 0): ?>
                 <?php while($pet = $result->fetch_assoc()): ?>
                     <div class="pet-card">
-                        <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo htmlspecialchars(strtolower($pet['Species'])); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" onerror="this.src='../Image/pet-placeholder.jpg'">
+                        <img src="../Image/<?php echo strtolower($pet['Species']); ?>s/<?php echo htmlspecialchars(strtolower($pet['Species'])); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" onerror="this.src='../Image/pet-placeholder.jpg'">
                         <h2><?php echo htmlspecialchars($pet['Pet_Name']); ?></h2>
                         <p class="breed"><?php echo htmlspecialchars($pet['Breed']); ?></p>
                         <p class="details">

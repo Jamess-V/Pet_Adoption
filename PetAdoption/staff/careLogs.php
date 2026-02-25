@@ -141,7 +141,7 @@ $pets_result = $conn->query($pets_sql);
                     <?php while($log = $result->fetch_assoc()): ?>
                         <div class="log-card" onclick="window.location.href='careLogsDetail.php?log_id=<?php echo $log['Log_id']; ?>'" style="cursor: pointer;">
                             <div class="log-content">
-                                <img src="../Image/<?php echo htmlspecialchars($log['Species']); ?>s/<?php echo strtolower($log['Species']); ?>01.jpg" 
+                                <img src="../Image/<?php echo strtolower($log['Species']); ?>s/<?php echo strtolower($log['Species']); ?>01.jpg" 
                                      alt="<?php echo htmlspecialchars($log['Pet_Name']); ?>"
                                      class="pet-avatar"
                                      onerror="this.src='../Image/pet-placeholder.jpg'">

@@ -87,7 +87,7 @@ $result = $conn->query($sql);
         </aside>
 
         
-        <main class="adoption-app-content">
+        <<main class="adoption-app-content">
             <h2>Adoption Applications</h2>
             <p class="subtitle">User Details</p>
 
@@ -126,36 +126,7 @@ $result = $conn->query($sql);
                         <p>No applications found.</p>
                     </div>
                 <?php endif; ?>
-                    <div class="card-content">
-                        <h3 class="applicant-name">Lando Reyes</h3>
-                        <div class="applicant-info">
-                            <div class="info-row">
-                                <p><strong>Age:</strong> 28</p>
-                            </div>
-                            <div class="info-row">
-                                <p><strong>Gender:</strong> Male</p>
-                                <p><strong>Email:</strong> lando.reyes@example.com</p>
-                            </div>
-                            <div class="info-row">
-                                <p><strong>Phone Number:</strong> +66 123456789</p>
-                            </div>
-                            <div class="info-row">
-                                <p><strong>Home Address:</strong> 123/45 Sukhumvit Rd, Khlong Tan Nuea, Watthana, Bangkok</p>
-                            </div>
-                            <div class="reason-section">
-                                <p><strong>Reason for Adoption:</strong> Looking for companionship and wants to give a stray dog a loving home</p>
-                            </div>
-                            <div class="preferred-pets">
-                                <p><strong>Preferred Pets:</strong> Golden Retriever, Labrador, Beagle</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-actions">
-                        <span class="status-badge pending">Pending</span>
-                        <button class="view-details-btn" onclick="window.location.href='adoptionAppDetail.html'">View more Details</button>
-                    </div>
                 </div>
-            </div>
         </main>
     </div>
 </body>

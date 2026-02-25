@@ -118,7 +118,7 @@ $result = $conn->query($sql);
                     <?php while($pet = $result->fetch_assoc()): ?>
                         <div class="pet-item" data-name="<?php echo strtolower($pet['Pet_Name']); ?>">
                             <div class="pet-info-section">
-                                <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" class="pet-avatar" onerror="this.src='../Image/pet-placeholder.jpg'">
+                                <img src="../Image/<?php echo strtolower($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" class="pet-avatar" onerror="this.src='../Image/pet-placeholder.jpg'">
                                 <div class="pet-details">
                                     <h3><?php echo htmlspecialchars($pet['Pet_Name']); ?></h3>
                                     <p class="pet-breed"><?php echo htmlspecialchars($pet['Breed']); ?></p>

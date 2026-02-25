@@ -117,7 +117,7 @@ if(!$log) {
 
             <div class="detail-container">
                 <div class="pet-header-section">
-                    <img src="../Image/<?php echo htmlspecialchars($log['Species']); ?>s/<?php echo strtolower($log['Species']); ?>01.jpg" 
+                    <img src="../Image/<?php echo strtolower($log['Species']); ?>s/<?php echo strtolower($log['Species']); ?>01.jpg" 
                          alt="<?php echo htmlspecialchars($log['Pet_Name']); ?>"
                          class="pet-detail-avatar"
                          onerror="this.src='../Image/pet-placeholder.jpg'">

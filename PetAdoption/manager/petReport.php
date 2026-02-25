@@ -88,7 +88,7 @@ $result = $conn->query($sql);
                     <?php while($pet = $result->fetch_assoc()): ?>
                         <div class="pet-item">
                             <div class="pet-item-left">
-                                <img src="../Image/<?php echo htmlspecialchars($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" 
+                                <img src="../Image/<?php echo strtolower($pet['Species']); ?>s/<?php echo strtolower($pet['Species']); ?>01.jpg" 
                                      alt="<?php echo htmlspecialchars($pet['Pet_Name']); ?>" 
                                      class="pet-item-photo" 
                                      onerror="this.src='../Image/pet-placeholder.jpg'">
