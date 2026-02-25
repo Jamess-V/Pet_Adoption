@@ -163,12 +163,6 @@ $app_result = $conn->query($app_query);
                                     <span class="app-detail-value"><?php echo date('M d, Y', strtotime($app['Application_date'])); ?></span>
                                 </div>
                             </div>
-
-                            <div class="app-actions">
-                                <button class="view-btn" onclick="window.location.href='../user/pet.php?pet_id=<?php echo $app['Pet_id']; ?>'">
-                                    View Pet Details
-                                </button>
-                            </div>
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
