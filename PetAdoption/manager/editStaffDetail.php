@@ -26,27 +26,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['fullName'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
-    $dob = $_POST['dob'];
-    $gender = $_POST['gender'];
-    $address = $_POST['address'];
-    $position = $_POST['position'];
-    $department = $_POST['department'];
-    $employment_type = $_POST['employmentType'];
-    $hire_date = $_POST['joinDate'];
-    $work_schedule = $_POST['workSchedule'];
-    $salary = $_POST['salary'];
-    $emergency_name = $_POST['emergencyName'];
-    $emergency_relation = $_POST['relationship'];
-    $emergency_phone = $_POST['emergencyPhone'];
+    $works_at = $_POST['worksAt'];
     
-    $update_query = "UPDATE Staff SET Name=?, Email=?, PhoneNumber=?, DateOfBirth=?, Gender=?, Address=?, 
-                     Position=?, Department=?, EmploymentType=?, HireDate=?, WorkSchedule=?, Salary=?, 
-                     EmergencyContactName=?, EmergencyContactRelation=?, EmergencyContactPhone=? WHERE Staff_id=?";
+    $update_query = "UPDATE Staff SET Name=?, Email=?, Phone=?, Works_at=? WHERE Staff_id=?";
     $update_stmt = $conn->prepare($update_query);
-    $update_stmt->bind_param("sssssssssssssssi", $name, $email, $phone, $dob, $gender, $address, 
-                              $position, $department, $employment_type, $hire_date, $work_schedule, $salary,
-                              $emergency_name, $emergency_relation, $emergency_phone, $staff_id);
-    $update_stmt->execute();
+    if (!$update_stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $update_stmt->bind_param("ssssi", $name, $email, $phone, $works_at, $staff_id);
+    if (!$update_stmt->execute()) {
+        die("Update failed: " . $update_stmt->error);
+    }
     
     header("Location: staffManagementDetail.php?staff_id=$staff_id&updated=true");
     exit();
@@ -158,102 +148,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             <div class="form-group">
                                 <label for="phone">Phone Number</label>
-                                <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($staff['PhoneNumber'] ?? ''); ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="dob">Date of Birth</label>
-                                <input type="date" id="dob" name="dob" value="<?php echo $staff['DateOfBirth'] ?? ''; ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="gender">Gender</label>
-                                <select id="gender" name="gender" required>
-                                    <option value="Female" <?php echo ($staff['Gender'] === 'Female') ? 'selected' : ''; ?>>Female</option>
-                                    <option value="Male" <?php echo ($staff['Gender'] === 'Male') ? 'selected' : ''; ?>>Male</option>
-                                    <option value="Other" <?php echo ($staff['Gender'] === 'Other') ? 'selected' : ''; ?>>Other</option>
-                                </select>
+                                <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($staff['Phone'] ?? ''); ?>" required>
                             </div>
 
                             <div class="form-group full-width">
-                                <label for="address">Address</label>
-                                <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($staff['Address'] ?? ''); ?>" required>
+                                <label for="worksAt">Work Location</label>
+                                <input type="text" id="worksAt" name="worksAt" placeholder="e.g., Bangkok Shelter, Main Location" value="<?php echo htmlspecialchars($staff['Works_at'] ?? ''); ?>" required>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3 class="section-title">Employment Information</h3>
+                        <h3 class="section-title">Account Information</h3>
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label for="position">Position</label>
-                                <input type="text" id="position" name="position" value="<?php echo htmlspecialchars($staff['Position'] ?? ''); ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="department">Department</label>
-                                <select id="department" name="department" required>
-                                    <option value="Operations" <?php echo ($staff['Department'] === 'Operations') ? 'selected' : ''; ?>>Operations</option>
-                                    <option value="Animal Care" <?php echo ($staff['Department'] === 'Animal Care') ? 'selected' : ''; ?>>Animal Care</option>
-                                    <option value="Administration" <?php echo ($staff['Department'] === 'Administration') ? 'selected' : ''; ?>>Administration</option>
-                                    <option value="Veterinary" <?php echo ($staff['Department'] === 'Veterinary') ? 'selected' : ''; ?>>Veterinary</option>
-                                    <option value="Volunteer" <?php echo ($staff['Department'] === 'Volunteer') ? 'selected' : ''; ?>>Volunteer</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="employmentType">Employment Type</label>
-                                <select id="employmentType" name="employmentType" required>
-                                    <option value="Full-time" <?php echo ($staff['EmploymentType'] === 'Full-time') ? 'selected' : ''; ?>>Full-time</option>
-                                    <option value="Part-time" <?php echo ($staff['EmploymentType'] === 'Part-time') ? 'selected' : ''; ?>>Part-time</option>
-                                    <option value="Contract" <?php echo ($staff['EmploymentType'] === 'Contract') ? 'selected' : ''; ?>>Contract</option>
-                                    <option value="Volunteer" <?php echo ($staff['EmploymentType'] === 'Volunteer') ? 'selected' : ''; ?>>Volunteer</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="joinDate">Join Date</label>
-                                <input type="date" id="joinDate" name="joinDate" value="<?php echo $staff['HireDate'] ?? ''; ?>" required>
-                            </div>
-
                             <div class="form-group full-width">
-                                <label for="workSchedule">Work Schedule</label>
-                                <input type="text" id="workSchedule" name="workSchedule" value="<?php echo htmlspecialchars($staff['WorkSchedule'] ?? ''); ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="salary">Salary (per year)</label>
-                                <input type="text" id="salary" name="salary" value="<?php echo htmlspecialchars($staff['Salary'] ?? ''); ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="role">Role</label>
-                                <select id="role" name="role" disabled>
-                                    <option value="Manager" <?php echo ($staff['Position'] === 'Manager') ? 'selected' : ''; ?>>Manager</option>
-                                    <option value="Senior Staff" <?php echo ($staff['Position'] === 'Senior Staff') ? 'selected' : ''; ?>>Senior Staff</option>
-                                    <option value="Staff" <?php echo ($staff['Position'] === 'Staff') ? 'selected' : ''; ?>>Staff</option>
-                                    <option value="Volunteer" <?php echo ($staff['Position'] === 'Volunteer') ? 'selected' : ''; ?>>Volunteer</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3 class="section-title">Emergency Contact</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="emergencyName">Contact Name</label>
-                                <input type="text" id="emergencyName" name="emergencyName" value="<?php echo htmlspecialchars($staff['EmergencyContactName'] ?? ''); ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="relationship">Relationship</label>
-                                <input type="text" id="relationship" name="relationship" value="<?php echo htmlspecialchars($staff['EmergencyContactRelation'] ?? ''); ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="emergencyPhone">Phone Number</label>
-                                <input type="text" id="emergencyPhone" name="emergencyPhone" value="<?php echo htmlspecialchars($staff['EmergencyContactPhone'] ?? ''); ?>" required>
+                                <label>Member Since</label>
+                                <p style="padding: 10px 0; color: #666;"><?php echo date('F d, Y', strtotime($staff['created_at'])); ?></p>
                             </div>
                         </div>
                     </div>

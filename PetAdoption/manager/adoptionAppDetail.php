@@ -6,19 +6,18 @@ if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'manager') {
     exit();
 }
 
-$app_id = isset($_GET['app_id']) ? intval($_GET['app_id']) : 0;
+$app_id = isset($_GET['App_id']) ? intval($_GET['App_id']) : 0;
 $message = '';
 
 if(!$app_id) {
-    header("Location: adoptionApp.php");
-    exit();
+    die("Error: No application ID provided. Make sure you clicked 'View more Details' from the applications list.");
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
     $new_status = ($action === 'approve') ? 'Approved' : 'Rejected';
     
-    $sql = "UPDATE Application SET Status = ? WHERE Application_id = ?";
+    $sql = "UPDATE Application SET Status = ? WHERE App_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $new_status, $app_id);
     
@@ -32,15 +31,23 @@ $sql = "SELECT a.*, u.Name as UserName, u.Email, u.Phone, u.Address, u.Bio,
         FROM Application a
         JOIN Users u ON a.User_id = u.User_id
         JOIN Pets p ON a.Pet_id = p.Pet_id
-        WHERE a.Application_id = ?";
+        WHERE a.App_id = ?";
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Prepare failed: " . $conn->error);
+}
 $stmt->bind_param("i", $app_id);
-$stmt->execute();
-$app = $stmt->get_result()->fetch_assoc();
+if (!$stmt->execute()) {
+    die("Execute failed: " . $stmt->error);
+}
+$result = $stmt->get_result();
+if (!$result) {
+    die("Get result failed: " . $stmt->error);
+}
+$app = $result->fetch_assoc();
 
 if(!$app) {
-    header("Location: adoptionApp.php");
-    exit();
+    die("No application found for ID: " . htmlspecialchars($app_id) . ". Please check if the application exists in the database.");
 }
 ?>
 <!DOCTYPE html>
@@ -191,7 +198,7 @@ if(!$app) {
                 </div>
 
                 <?php if($app['Status'] === 'Pending'): ?>
-                <form method="POST" action="adoptionAppDetail.php?app_id=<?php echo $app_id; ?>">
+                <form method="POST" action="adoptionAppDetail.php?App_id=<?php echo $app_id; ?>">
                     <div class="action-buttons">
                         <button type="submit" name="action" value="approve" class="approve-btn">Approve Application</button>
                         <button type="submit" name="action" value="reject" class="decline-btn">Reject Application</button>

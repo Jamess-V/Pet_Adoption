@@ -87,7 +87,7 @@ $result = $conn->query($sql);
         </aside>
 
         
-        <<main class="adoption-app-content">
+        <main class="adoption-app-content">
             <h2>Adoption Applications</h2>
             <p class="subtitle">User Details</p>
 
@@ -117,7 +117,7 @@ $result = $conn->query($sql);
                             </div>
                             <div class="card-actions">
                                 <span class="status-badge <?php echo strtolower($app['Status']); ?>"><?php echo htmlspecialchars($app['Status']); ?></span>
-                                <button class="view-details-btn" onclick="window.location.href='adoptionAppDetail.php?app_id=<?php echo $app['Application_id']; ?>'">View more Details</button>
+                                <button class="view-details-btn" onclick="window.location.href='adoptionAppDetail.php?App_id=<?php echo $app['App_id']; ?>'">View more Details</button>
                             </div>
                         </div>
                     <?php endwhile; ?>

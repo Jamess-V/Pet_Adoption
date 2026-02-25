@@ -23,14 +23,22 @@ if($result->num_rows === 0) {
 $staff = $result->fetch_assoc();
 
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_role'])) {
-    $new_position = $_POST['position'];
-    $update_query = "UPDATE Staff SET Position = ? WHERE Staff_id = ?";
+    $works_at = !empty($_POST['works_at']) ? trim($_POST['works_at']) : '';
+    $update_query = "UPDATE Staff SET Works_at = ? WHERE Staff_id = ?";
     $update_stmt = $conn->prepare($update_query);
-    $update_stmt->bind_param("si", $new_position, $staff_id);
-    $update_stmt->execute();
+    if (!$update_stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $update_stmt->bind_param("si", $works_at, $staff_id);
+    if (!$update_stmt->execute()) {
+        die("Update failed: " . $update_stmt->error);
+    }
     header("Location: staffManagementDetail.php?staff_id=$staff_id&updated=true");
     exit();
 }
+
+// Get current work location
+$current_work_location = !empty($staff['Works_at']) ? htmlspecialchars($staff['Works_at']) : 'Not assigned';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -110,7 +118,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_role'])) {
                 <svg viewBox="0 0 24 24" class="check-icon">
                     <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Role Updated Successfully!</span>
+                <span>Assignment Updated Successfully!</span>
             </div>
 
             <div class="detail-header">
@@ -123,35 +131,21 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_role'])) {
                     
                     <div class="detail-section">
                         <h3 class="staff-name"><?php echo htmlspecialchars($staff['Name']); ?></h3>
-                        <p class="staff-position"><?php echo htmlspecialchars($staff['Position'] ?? 'Staff Member'); ?></p>
+                        <p class="staff-position">Staff Member</p>
                         <div class="basic-info">
                             <p><strong>Employee ID:</strong> EMP<?php echo str_pad($staff['Staff_id'], 3, '0', STR_PAD_LEFT); ?></p>
                             <p><strong>Email:</strong> <?php echo htmlspecialchars($staff['Email']); ?></p>
-                            <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($staff['PhoneNumber'] ?? 'N/A'); ?></p>
-                            <p><strong>Date of Birth:</strong> <?php echo $staff['DateOfBirth'] ? date('F d, Y', strtotime($staff['DateOfBirth'])) : 'N/A'; ?></p>
-                            <p><strong>Address:</strong> <?php echo htmlspecialchars($staff['Address'] ?? 'N/A'); ?></p>
+                            <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($staff['Phone'] ?? 'N/A'); ?></p>
+                            <p><strong>Work Location:</strong> <?php echo $current_work_location; ?></p>
                         </div>
                     </div>
 
                     
                     <div class="detail-section">
-                        <h3 class="section-title">Employment Information</h3>
+                        <h3 class="section-title">Current Assignment</h3>
                         <div class="section-content">
-                            <p><strong>Department:</strong> <?php echo htmlspecialchars($staff['Department'] ?? 'Operations'); ?></p>
-                            <p><strong>Employment Type:</strong> <?php echo htmlspecialchars($staff['EmploymentType'] ?? 'Full-time'); ?></p>
-                            <p><strong>Join Date:</strong> <?php echo $staff['HireDate'] ? date('F d, Y', strtotime($staff['HireDate'])) : 'N/A'; ?></p>
-                            <p><strong>Work Schedule:</strong> <?php echo htmlspecialchars($staff['WorkSchedule'] ?? 'Monday - Friday'); ?></p>
-                            <p><strong>Salary:</strong> <?php echo isset($staff['Salary']) ? '$' . number_format($staff['Salary']) . '/year' : 'N/A'; ?></p>
-                        </div>
-                    </div>
-
-                    
-                    <div class="detail-section">
-                        <h3 class="section-title">Emergency Contact</h3>
-                        <div class="section-content">
-                            <p><strong>Contact Name:</strong> <?php echo htmlspecialchars($staff['EmergencyContactName'] ?? 'N/A'); ?></p>
-                            <p><strong>Relationship:</strong> <?php echo htmlspecialchars($staff['EmergencyContactRelation'] ?? 'N/A'); ?></p>
-                            <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($staff['EmergencyContactPhone'] ?? 'N/A'); ?></p>
+                            <p><strong>Work Location:</strong> <?php echo $current_work_location; ?></p>
+                            <p><strong>Member Since:</strong> <?php echo date('F d, Y', strtotime($staff['created_at'])); ?></p>
                         </div>
                     </div>
                 </div>
@@ -159,23 +153,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_role'])) {
                 <div class="detail-right">
                     
                     <div class="role-card">
-                        <h3 class="role-title">Role & Assignment</h3>
+                        <h3 class="role-title">Work Assignment</h3>
                         <form method="POST">
                             <div class="current-role">
-                                <p><strong>Current Role:</strong></p>
-                                <span class="role-badge manager"><?php echo htmlspecialchars($staff['Position'] ?? 'Staff'); ?></span>
+                                <p><strong>Current Location:</strong></p>
+                                <span class="role-badge manager"><?php echo $current_work_location; ?></span>
                             </div>
                             <div class="role-options">
-                                <label><strong>Assign Role:</strong></label>
-                                <select name="position" class="role-select">
-                                    <option value="Manager" <?php echo ($staff['Position'] === 'Manager') ? 'selected' : ''; ?>>Manager</option>
-                                    <option value="Senior Staff" <?php echo ($staff['Position'] === 'Senior Staff') ? 'selected' : ''; ?>>Senior Staff</option>
-                                    <option value="Staff" <?php echo ($staff['Position'] === 'Staff') ? 'selected' : ''; ?>>Staff</option>
-                                    <option value="Volunteer" <?php echo ($staff['Position'] === 'Volunteer') ? 'selected' : ''; ?>>Volunteer</option>
-                                    <option value="Veterinary Technician" <?php echo ($staff['Position'] === 'Veterinary Technician') ? 'selected' : ''; ?>>Veterinary Technician</option>
-                                    <option value="Receptionist" <?php echo ($staff['Position'] === 'Receptionist') ? 'selected' : ''; ?>>Receptionist</option>
-                                </select>
-                                <button type="submit" name="update_role" class="assign-role-btn">Update Role</button>
+                                <label><strong>Assign Work Location:</strong></label>
+                                <input type="text" name="works_at" class="role-select" placeholder="Enter work location" value="<?php echo htmlspecialchars($staff['Works_at'] ?? ''); ?>" required>
+                                <button type="submit" name="update_role" class="assign-role-btn">Update Assignment</button>
                             </div>
                         </form>
                     </div>

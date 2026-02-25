@@ -42,14 +42,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $admission_date = $_POST['rescueDate'];
     $status = $_POST['status'];
     
-    $update_query = "UPDATE Pets SET Pet_Name=?, Breed=?, Species=?, Gender=?, DateOfBirth=?, Size=?, Weight=?, Color=?, 
-                     VaccinationStatus=?, Neutered=?, MedicalHistory=?, LastCheckup=?, Personality=?, TrainingLevel=?, 
-                     EnergyLevel=?, SpecialNeeds=?, AdmissionDate=?, Status=? WHERE Pet_id=?";
+    $update_query = "UPDATE Pets SET Pet_Name=?, Breed=?, Species=?, Gender=?, DateOfBirth=?, Color=?, Status=? WHERE Pet_id=?";
     $update_stmt = $conn->prepare($update_query);
-    $update_stmt->bind_param("ssssssssssssssssssi", $pet_name, $breed, $species, $gender, $dateofbirth, $size, $weight, $color,
-                              $vaccination_status, $neutered, $medical_history, $last_checkup, $personality, $training_level,
-                              $energy_level, $special_needs, $admission_date, $status, $pet_id);
-    $update_stmt->execute();
+    if (!$update_stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    
+    $update_stmt->bind_param("sssssssi", $pet_name, $breed, $species, $gender, $dateofbirth, $color, $status, $pet_id);
+    
+    if (!$update_stmt->execute()) {
+        die("Update failed: " . $update_stmt->error);
+    }
     
     header("Location: petReportDetail.php?pet_id=$pet_id");
     exit();
