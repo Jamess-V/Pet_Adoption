@@ -121,7 +121,7 @@ if($pet['DateOfBirth']) {
                 </svg>
                 Meet & Greet
             </button>
-            <button class="sidebar-btn">
+            <button class="sidebar-btn" onclick="window.location.href='AppView.php'">
                 <svg viewBox="0 0 20 20">
                     <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
@@ -129,7 +129,6 @@ if($pet['DateOfBirth']) {
                     <line x1="8" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.5"/>
                 </svg>
                 Applications
-                <span class="read-only">(Read-only)</span>
             </button>
         </aside>
         <main class="edit-pet-content">

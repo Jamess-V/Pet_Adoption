@@ -11,8 +11,8 @@ $app_query = "SELECT a.*, u.Name as UserName, u.Email as UserEmail, u.Phone as U
               FROM Application a
               JOIN Users u ON a.User_id = u.User_id
               JOIN Pets p ON a.Pet_id = p.Pet_id
-              WHERE a.Status = 'Pending'
-              ORDER BY a.Application_date DESC";
+              WHERE a.Status IN ('Pending', 'Approved')
+              ORDER BY a.Status ASC, a.Application_date DESC";
 $app_result = $conn->query($app_query);
 ?>
 <!DOCTYPE html>
@@ -20,14 +20,13 @@ $app_result = $conn->query($app_query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Applications - ADOPET Staff</title>
+    <title>Adoption Applications - ADOPET Staff</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/staff.css">
     <link rel="stylesheet" href="../css/buttons.css">
     <link rel="stylesheet" href="../css/appView.css">
 </head>
 <body>
-    <!-- Navigation -->
     <nav>
         <div class="nav-left">
             <div class="logo">
@@ -86,33 +85,38 @@ $app_result = $conn->query($app_query);
                 Meet & Greet
             </button>
         </aside>
-
-        <!-- Main Content -->
         <main class="dashboard-content">
             <div class="page-header">
-                <h2>Pending Applications</h2>
-                <p>View all adoption applications awaiting manager review</p>
+                <h2>Adoption Applications</h2>
+                <p>View all pending and approved adoption applications</p>
             </div>
 
             <?php
-            $total_pending = $app_result ? $app_result->num_rows : 0;
-            $today_query = "SELECT COUNT(*) as today_count FROM Application WHERE Status = 'Pending' AND DATE(Application_date) = CURDATE()";
-            $today_result = $conn->query($today_query);
-            $today_count = $today_result->fetch_assoc()['today_count'] ?? 0;
+            $total_apps = $app_result ? $app_result->num_rows : 0;
+            $pending_query = "SELECT COUNT(*) as pending_count FROM Application WHERE Status = 'Pending'";
+            $pending_result = $conn->query($pending_query);
+            $pending_count = $pending_result->fetch_assoc()['pending_count'] ?? 0;
+            
+            $approved_query = "SELECT COUNT(*) as approved_count FROM Application WHERE Status = 'Approved'";
+            $approved_result = $conn->query($approved_query);
+            $approved_count = $approved_result->fetch_assoc()['approved_count'] ?? 0;
             ?>
 
             <div class="stats-summary">
                 <div class="stat-item">
-                    <div class="stat-number"><?php echo $total_pending; ?></div>
-                    <div class="stat-label">Total Pending</div>
+                    <div class="stat-number"><?php echo $total_apps; ?></div>
+                    <div class="stat-label">Total Applications</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number"><?php echo $today_count; ?></div>
-                    <div class="stat-label">Submitted Today</div>
+                    <div class="stat-number"><?php echo $pending_count; ?></div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number"><?php echo $approved_count; ?></div>
+                    <div class="stat-label">Approved</div>
                 </div>
             </div>
 
-            <!-- Applications List -->
             <div class="applications-container">
                 <?php if($app_result && $app_result->num_rows > 0): ?>
                     <?php while($app = $app_result->fetch_assoc()): ?>
@@ -121,7 +125,9 @@ $app_result = $conn->query($app_query);
                                 <div class="app-title">
                                     Application #<?php echo str_pad($app['App_id'], 4, '0', STR_PAD_LEFT); ?>
                                 </div>
-                                <span class="app-status-badge pending">Pending Review</span>
+                                <span class="app-status-badge <?php echo strtolower($app['Status']); ?>">
+                                    <?php echo $app['Status'] == 'Pending' ? 'Pending Review' : 'Approved by Manager'; ?>
+                                </span>
                             </div>
                             
                             <div class="app-details">
@@ -167,8 +173,8 @@ $app_result = $conn->query($app_query);
                             <line x1="16" y1="17" x2="8" y2="17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <polyline points="10 9 9 9 8 9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <h3>No Pending Applications</h3>
-                        <p>All applications have been reviewed by the manager.</p>
+                        <h3>No Applications Found</h3>
+                        <p>There are no pending or approved applications at this time.</p>
                     </div>
                 <?php endif; ?>
             </div>

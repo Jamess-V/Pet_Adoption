@@ -12,18 +12,6 @@ ALTER TABLE Staff ADD COLUMN Password VARCHAR(255) NOT NULL DEFAULT 'staff123' A
 -- add password column to Manager table
 ALTER TABLE Manager ADD COLUMN Password VARCHAR(255) NOT NULL DEFAULT 'admin123' AFTER Name;
 
--- Create Application table
-CREATE TABLE IF NOT EXISTS Application (
-    Application_id INT PRIMARY KEY AUTO_INCREMENT,
-    Pet_id INT,
-    User_id INT,
-    Application_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
-    Answers TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Pet_id) REFERENCES Pets(Pet_id) ON DELETE CASCADE,
-    FOREIGN KEY (User_id) REFERENCES Users(User_id) ON DELETE CASCADE
-);
 
 -- Create ShelterAppointment table
 CREATE TABLE IF NOT EXISTS ShelterAppointment (
