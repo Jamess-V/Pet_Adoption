@@ -139,117 +139,11 @@ $result = $conn->query($sql);
                     <p style="text-align: center; padding: 40px; color: #999;">No pets found.</p>
                 <?php endif; ?>
             </div>
-                            <h3>Max</h3>
-                            <p>Dog • Golden Retriever</p>
-                        </div>
-                        <span class="status-badge available">Available</span>
-                    </div>
-                    <div class="pet-actions">
-                        <button class="action-btn-small" onclick="window.location.href='editPet.html'">
-                            <svg viewBox="0 0 16 16">
-                                <path d="M2 11L2 14L5 14L12 7L9 4L2 11Z"/>
-                                <path d="M13 3L14 4L12 6L11 5L13 3Z"/>
-                            </svg>
-                            Edit
-                        </button>
-                        <button class="action-btn-small">
-                            <svg viewBox="0 0 16 16">
-                                <path d="M8 1C4.1 1 1 4.1 1 8C1 11.9 4.1 15 8 15C11.9 15 15 11.9 15 8C15 4.1 11.9 1 8 1ZM8 13C5.2 13 3 10.8 3 8C3 5.2 5.2 3 8 3C10.8 3 13 5.2 13 8C13 10.8 10.8 13 8 13Z"/>
-                                <path d="M9 5H7V9H9V5Z"/>
-                                <rect x="7" y="10" width="2" height="2"/>
-                            </svg>
-                            Medical
-                        </button>
-                        <button class="action-btn-small" onclick="window.location.href='careLogsDetail.html'">
-                            <svg viewBox="0 0 16 16">
-                                <rect x="3" y="2" width="10" height="12" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/>
-                                <line x1="5" y1="5" x2="11" y2="5" stroke="currentColor" stroke-width="1.2"/>
-                                <line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.2"/>
-                                <line x1="5" y1="11" x2="8" y2="11" stroke="currentColor" stroke-width="1.2"/>
-                            </svg>
-                            Care Log
-                        </button>
-                    </div>
-                </div>
-
-                <div class="pet-item">
-                    <div class="pet-info-section">
-                        <img src="../Image/Scottish_cat.jpg" alt="Luna" class="pet-avatar">
-                        <div class="pet-details">
-                            <h3>Luna</h3>
-                            <p>Cat • Siamese</p>
-                        </div>
-                        <span class="status-badge pending">Pending</span>
-                    </div>
-                    <div class="pet-actions">
-                        <button class="action-btn-small">
-                            <svg viewBox="0 0 16 16">
-                                <path d="M2 11L2 14L5 14L12 7L9 4L2 11Z"/>
-                                <path d="M13 3L14 4L12 6L11 5L13 3Z"/>
-                            </svg>
-                            Edit
-                        </button>
-                        <button class="action-btn-small">
-                            <svg viewBox="0 0 16 16">
-                                <path d="M8 1C4.1 1 1 4.1 1 8C1 11.9 4.1 15 8 15C11.9 15 15 11.9 15 8C15 4.1 11.9 1 8 1ZM8 13C5.2 13 3 10.8 3 8C3 5.2 5.2 3 8 3C10.8 3 13 5.2 13 8C13 10.8 10.8 13 8 13Z"/>
-                                <path d="M9 5H7V9H9V5Z"/>
-                                <rect x="7" y="10" width="2" height="2"/>
-                            </svg>
-                            Medical
-                        </button>
-                        <button class="action-btn-small" onclick="window.location.href='careLogsDetail.html'">
-                            <svg viewBox="0 0 16 16">
-                                <rect x="3" y="2" width="10" height="12" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/>
-                                <line x1="5" y1="5" x2="11" y2="5" stroke="currentColor" stroke-width="1.2"/>
-                                <line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.2"/>
-                                <line x1="5" y1="11" x2="8" y2="11" stroke="currentColor" stroke-width="1.2"/>
-                            </svg>
-                            Care Log
-                        </button>
-                    </div>
-                </div>
-
-                <div class="pet-item">
-                    <div class="pet-info-section">
-                        <img src="../Image/german-shepherd-2-3.jpg" alt="Charlie" class="pet-avatar">
-                        <div class="pet-details">
-                            <h3>Charlie</h3>
-                            <p>Dog • German Shepherd</p>
-                        </div>
-                        <span class="status-badge available">Available</span>
-                    </div>
-                    <div class="pet-actions">
-                        <button class="action-btn-small">
-                            <svg viewBox="0 0 16 16">
-                                <path d="M2 11L2 14L5 14L12 7L9 4L2 11Z"/>
-                                <path d="M13 3L14 4L12 6L11 5L13 3Z"/>
-                            </svg>
-                            Edit
-                        </button>
-                        <button class="action-btn-small">
-                            <svg viewBox="0 0 16 16">
-                                <path d="M8 1C4.1 1 1 4.1 1 8C1 11.9 4.1 15 8 15C11.9 15 15 11.9 15 8C15 4.1 11.9 1 8 1ZM8 13C5.2 13 3 10.8 3 8C3 5.2 5.2 3 8 3C10.8 3 13 5.2 13 8C13 10.8 10.8 13 8 13Z"/>
-                                <path d="M9 5H7V9H9V5Z"/>
-                                <rect x="7" y="10" width="2" height="2"/>
-                            </svg>
-                            Medical
-                        </button>
-                        <button class="action-btn-small" onclick="window.location.href='careLogsDetail.html'">
-                            <svg viewBox="0 0 16 16">
-                                <rect x="3" y="2" width="10" height="12" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/>
-                                <line x1="5" y1="5" x2="11" y2="5" stroke="currentColor" stroke-width="1.2"/>
-                                <line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.2"/>
-                                <line x1="5" y1="11" x2="8" y2="11" stroke="currentColor" stroke-width="1.2"/>
-                            </svg>
-                            Care Log
-                        </button>
-                    </div>
-                </div>
-            </div>
+        </main>
+    </div>
         </main>
     </div>
     <script>
-        // Search functionality
         document.getElementById('searchInput').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             const petItems = document.querySelectorAll('.pet-item');

@@ -1,6 +1,7 @@
 CREATE DATABASE pet_adoption;
 USE pet_adoption;
 
+--Store the information of Users
 CREATE TABLE Users (
     User_id INT PRIMARY KEY AUTO_INCREMENT,
     Phone VARCHAR(20),
@@ -11,6 +12,7 @@ CREATE TABLE Users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+--Store the information of Staff
 CREATE TABLE Staff (
     Staff_id INT PRIMARY KEY AUTO_INCREMENT,
     Email VARCHAR(255) UNIQUE NOT NULL,
@@ -20,6 +22,7 @@ CREATE TABLE Staff (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+--Store the information of Manager
 CREATE TABLE Manager (
     Manager_id INT PRIMARY KEY AUTO_INCREMENT,
     Staff_id INT,
@@ -30,6 +33,7 @@ CREATE TABLE Manager (
     FOREIGN KEY (Staff_id) REFERENCES Staff(Staff_id) ON DELETE CASCADE
 );
 
+--Store animal shelter locations and contact information
 CREATE TABLE Shelter (
     Shelter_id INT PRIMARY KEY AUTO_INCREMENT,
     Manager_id INT,
@@ -40,6 +44,7 @@ CREATE TABLE Shelter (
     FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id) ON DELETE SET NULL
 );
 
+--Store the information of pets available for adoption, including their medical care status
 CREATE TABLE Pets (
     Pet_id INT PRIMARY KEY AUTO_INCREMENT,
     Shelter_id INT,
@@ -54,6 +59,7 @@ CREATE TABLE Pets (
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE SET NULL
 );
 
+--Store the applications submitted by users for adopting pets, including their answers to application questions and the status of their applications
 CREATE TABLE Application (
     App_id INT PRIMARY KEY AUTO_INCREMENT,
     Pet_id INT,
@@ -79,6 +85,7 @@ CREATE TABLE Reviews (
     FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id) ON DELETE SET NULL
 );
 
+--Track medical care for pets, including examination results and medication schedules
 CREATE TABLE Med_Care (
     Med_id INT PRIMARY KEY AUTO_INCREMENT,
     Pet_id INT,
@@ -89,6 +96,7 @@ CREATE TABLE Med_Care (
     FOREIGN KEY (Pet_id) REFERENCES Pets(Pet_id) ON DELETE CASCADE
 );
 
+--Manages appointments for pet visits and medical care
 CREATE TABLE Schedules (
     Schedule_id INT PRIMARY KEY AUTO_INCREMENT,
     Med_id INT,
@@ -100,6 +108,7 @@ CREATE TABLE Schedules (
     FOREIGN KEY (User_id) REFERENCES Users(User_id) ON DELETE CASCADE
 );
 
+--Links user to applicaitons they're associated with
 CREATE TABLE Associated_with (
     User_id INT,
     App_id INT,
@@ -109,6 +118,7 @@ CREATE TABLE Associated_with (
     FOREIGN KEY (App_id) REFERENCES Application(App_id) ON DELETE CASCADE
 );
 
+--Tracks which users submitted which applications
 CREATE TABLE Submits (
     User_id INT,
     App_id INT,
@@ -127,6 +137,7 @@ CREATE TABLE Manages (
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE CASCADE
 );
 
+--Tracks which staff members work at which shelters and their positions
 CREATE TABLE Works_at (
     Staff_id INT,
     Shelter_id INT,
@@ -137,6 +148,7 @@ CREATE TABLE Works_at (
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE CASCADE
 );
 
+--Tracks staff members are responsible for appointments
 CREATE TABLE Appoints (
     Staff_id INT,
     Schedule_id INT,
