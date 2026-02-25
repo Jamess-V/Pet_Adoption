@@ -115,6 +115,15 @@ if(!$log) {
                 <h2>Care Log Detail</h2>
             </div>
 
+            <?php if(isset($_SESSION['success_message'])): ?>
+                <div class="success-message" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                    <?php 
+                    echo htmlspecialchars($_SESSION['success_message']); 
+                    unset($_SESSION['success_message']);
+                    ?>
+                </div>
+            <?php endif; ?>
+
             <div class="detail-container">
                 <div class="pet-header-section">
                     <img src="../Image/<?php echo strtolower($log['Species']); ?>s/<?php echo strtolower($log['Species']); ?>01.jpg" 
@@ -150,6 +159,7 @@ if(!$log) {
 
                 <div class="log-actions">
                     <button class="action-btn secondary" onclick="window.location.href='careLogs.php'">Close</button>
+                    <button class="action-btn primary" onclick="window.location.href='editcareLogsDetail.php?log_id=<?php echo $log_id; ?>'">Edit Log</button>
                 </div>
             </div>
         </main>
