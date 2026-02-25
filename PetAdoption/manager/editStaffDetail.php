@@ -180,7 +180,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => {
-                    window.location.href = 'staffManagementDetail.html';
+                    window.location.href = 'staffManagementDetail.php';
                 }, 300);
             }, 3000);
         }
