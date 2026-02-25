@@ -175,21 +175,31 @@ if(!$app) {
                     <h3 class="section-title">Application Answers</h3>
                     <div class="section-content">
                         <?php 
-                        $answers = json_decode($app['Answers'], true);
-                        if($answers && is_array($answers)):
+                        if($app['Answers']):
+                            $answers_text = $app['Answers'];
                             $questions = [
-                                'hasYard' => 'Do you have a yard?',
-                                'homeType' => 'What type of home do you have?',
-                                'otherPets' => 'Do you have other pets?',
-                                'experience' => 'Previous pet experience',
-                                'hours' => 'Hours pet would be alone',
-                                'reason' => 'Reason for adoption'
+                                'Q1' => 'Please provide your age, occupation, and a brief description of your daily schedule, including how many hours you are typically away from home each day.',
+                                'Q2' => 'Describe your living situation (house, apartment, condo) and whether you own or rent. If you rent, please note any pet restrictions. Include the number of people and children (with ages) living in your household.',
+                                'Q3' => 'Do you currently have, or have you previously had, pets? If yes, describe the type of pets, how long you owned them, and what happened to them. If you have ever surrendered or rehomed a pet, please explain the circumstances.'
                             ];
-                            foreach($answers as $key => $value):
+                            preg_match_all('/Q(\d+):\s*(.*?)(?=Q\d+:|$)/s', $answers_text, $matches);
+                            
+                            if(!empty($matches[1])):
+                                for($i = 0; $i < count($matches[1]); $i++):
+                                    $q_num = 'Q' . $matches[1][$i];
+                                    $answer = trim($matches[2][$i]);
                         ?>
-                            <p><strong><?php echo isset($questions[$key]) ? $questions[$key] : ucfirst($key); ?>:</strong> <?php echo htmlspecialchars($value); ?></p>
+                            <div style="margin-bottom: 20px;">
+                                <p><strong><?php echo $matches[1][$i]; ?>. <?php echo $questions[$q_num]; ?></strong></p>
+                                <p style="margin-left: 20px; margin-top: 10px;"><?php echo nl2br(htmlspecialchars($answer)); ?></p>
+                            </div>
                         <?php
-                            endforeach;
+                                endfor;
+                            else:
+                        ?>
+                            <p><?php echo nl2br(htmlspecialchars($answers_text)); ?></p>
+                        <?php
+                            endif;
                         else:
                         ?>
                             <p>No additional answers provided.</p>

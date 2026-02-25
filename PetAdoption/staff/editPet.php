@@ -20,7 +20,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pet_name = trim($_POST['pet_name']);
     $species = trim($_POST['species']);
     $breed = trim($_POST['breed']);
-    $date_of_birth = $_POST['date_of_birth'];   
+    $date_of_birth = $_POST['date_of_birth'];
     $gender = $_POST['gender'];
     $color = trim($_POST['color']);
     $status = $_POST['status'];

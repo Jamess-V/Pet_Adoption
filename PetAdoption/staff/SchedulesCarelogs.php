@@ -19,8 +19,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'];
     $assigned_staff_id = intval($_POST['staff_id']);
     
-    $insert_sql = "INSERT INTO CareLogs (Pet_id, Staff_id, Activity_date, Activity_time, Activity_type, Description) 
-                   VALUES (?, ?, ?, ?, ?, ?)";
+    $insert_sql = "INSERT INTO CareLogs (Pet_id, Staff_id, Activity_date, Activity_time, Activity_type, Description) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_sql);
     $stmt->bind_param("iissss", $pet_id, $assigned_staff_id, $activity_date, $activity_time, $activity_type, $description);
     
