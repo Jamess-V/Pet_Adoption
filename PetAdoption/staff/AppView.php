@@ -6,6 +6,14 @@ if(!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
     header("Location: ../user/login.php");
     exit();
 }
+
+$staff_id = $_SESSION['user_id'];
+$sql = "SELECT * FROM Staff WHERE Staff_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $staff_id);
+$stmt->execute();
+$staff = $stmt->get_result()->fetch_assoc();
+
 $app_query = "SELECT a.*, u.Name as UserName, u.Email as UserEmail, u.Phone as UserPhone,
               p.Pet_Name, p.Species, p.Breed, p.Gender, p.Pet_id
               FROM Application a
@@ -37,7 +45,7 @@ $app_result = $conn->query($app_query);
             </ul>
         </div>
         <div class="nav-right">
-            <span style="color: #333; margin-right: 15px;">Staff: <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Staff'); ?></span>
+            <span style="color: #333; margin-right: 15px;">Welcome, <?php echo htmlspecialchars($staff['Name']); ?></span>
             <a href="../user/logout.php" class="btn btn-login">Logout</a>
         </div>
     </nav>
