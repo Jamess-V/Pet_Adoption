@@ -54,8 +54,6 @@ if(!$log) {
     header("Location: careLogs.php");
     exit();
 }
-
-// Fetch all staff members for dropdown
 $staff_sql = "SELECT Staff_id, Name FROM Staff ORDER BY Name";
 $staff_result = $conn->query($staff_sql);
 ?>

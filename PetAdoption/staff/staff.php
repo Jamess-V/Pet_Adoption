@@ -128,7 +128,7 @@ $pending_applications = $conn->query("SELECT COUNT(*) as count FROM Application 
                         </svg>
                         Add New Pet
                     </button>
-                    <button class="action-btn secondary">
+                    <button class="action-btn secondary" onclick="window.location.href='SchedulesCarelogs.php'">
                         <svg viewBox="0 0 20 20">
                             <rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
                             <line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.5"/>

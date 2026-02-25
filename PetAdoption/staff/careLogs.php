@@ -112,7 +112,12 @@ $pets_result = $conn->query($pets_sql);
         </aside>
 
         <main class="care-logs-content">
-            <h2>Daily Pet Care Logs</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Daily Pet Care Logs</h2>
+                <button class="action-btn primary" onclick="window.location.href='SchedulesCarelogs.php'" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                    <span style="font-size: 18px; margin-right: 5px;">+</span> Schedule New Task
+                </button>
+            </div>
 
             <div class="filters">
                 <button class="filter-btn <?php echo $date_filter === 'today' ? 'active' : ''; ?>" onclick="window.location.href='careLogs.php?date=today'">Today</button>
