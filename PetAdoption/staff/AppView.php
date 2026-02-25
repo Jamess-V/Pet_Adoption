@@ -59,14 +59,12 @@ $app_result = $conn->query($app_query);
                 </svg>
                 Pet Management
             </button>
-            <button class="sidebar-btn active">
+            <button class="sidebar-btn">
                 <svg viewBox="0 0 20 20">
-                    <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                    <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
-                    <line x1="8" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="1.5"/>
-                    <line x1="8" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M10 2C5.6 2 2 5.6 2 10C2 14.4 5.6 18 10 18C14.4 18 18 14.4 18 10C18 5.6 14.4 2 10 2ZM10 16C6.7 16 4 13.3 4 10C4 6.7 6.7 4 10 4C13.3 4 16 6.7 16 10C16 13.3 13.3 16 10 16Z"/>
+                    <path d="M10 6C9.4 6 9 6.4 9 7V10.4L11.3 12.7C11.7 13.1 12.3 13.1 12.7 12.7C13.1 12.3 13.1 11.7 12.7 11.3L11 9.6V7C11 6.4 10.6 6 10 6Z"/>
                 </svg>
-                Applications
+                Medical Records
             </button>
             <button class="sidebar-btn" onclick="window.location.href='careLogs.php'">
                 <svg viewBox="0 0 20 20">
@@ -83,6 +81,15 @@ $app_result = $conn->query($app_query);
                     <path d="M10 11C6.7 11 4 13.7 4 17H16C16 13.7 13.3 11 10 11Z"/>
                 </svg>
                 Meet & Greet
+            </button>
+            <button class="sidebar-btn active">
+                <svg viewBox="0 0 20 20">
+                    <path d="M14 3H6C4.9 3 4 3.9 4 5V15C4 16.1 4.9 17 6 17H14C15.1 17 16 16.1 16 15V5C16 3.9 15.1 3 14 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <line x1="8" y1="7" x2="12" y2="7" stroke="currentColor" stroke-width="1.5"/>
+                    <line x1="8" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="1.5"/>
+                    <line x1="8" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                Applications
             </button>
         </aside>
         <main class="dashboard-content">
@@ -102,17 +109,17 @@ $app_result = $conn->query($app_query);
             $approved_count = $approved_result->fetch_assoc()['approved_count'] ?? 0;
             ?>
 
-            <div class="stats-summary">
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $total_apps; ?></div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><?php echo $total_apps; ?></div>
                     <div class="stat-label">Total Applications</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $pending_count; ?></div>
+                <div class="stat-card">
+                    <div class="stat-icon"><?php echo $pending_count; ?></div>
                     <div class="stat-label">Pending Review</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $approved_count; ?></div>
+                <div class="stat-card">
+                    <div class="stat-icon"><?php echo $approved_count; ?></div>
                     <div class="stat-label">Approved</div>
                 </div>
             </div>

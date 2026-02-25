@@ -1,8 +1,4 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 session_start();
 require_once '../config.php';
 
@@ -58,8 +54,8 @@ if (!$staff_result) {
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/staff.css">
     <link rel="stylesheet" href="../css/buttons.css">
-    <link rel="stylesheet" href="../css/editCareLogsDetail.css">
     <link rel="stylesheet" href="../css/careLogsDetail.css">
+    <link rel="stylesheet" href="../css/schedulesCarelogs.css">
 </head>
 <body>
     <nav>
@@ -133,58 +129,53 @@ if (!$staff_result) {
             </div>
 
             <?php if($success_message): ?>
-                <div class="success-message" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                <div class="success-alert">
                     <?php echo htmlspecialchars($success_message); ?>
                 </div>
             <?php endif; ?>
 
             <?php if($error_message): ?>
-                <div class="error-message">
+                <div class="error-alert">
                     <?php echo htmlspecialchars($error_message); ?>
                 </div>
             <?php endif; ?>
 
-            <div class="detail-container">
-                <form method="POST" class="edit-log-form">
-                    <div class="log-info-card">
-                        <div class="info-row">
-                            <div class="info-label">Select Pet</div>
-                            <div class="info-value">
-                                <select name="pet_id" required class="form-input" id="pet-select">
+            <div class="schedule-form-container">
+                <form method="POST">
+                    <div class="form-card">
+                        <h3 class="form-section-title">Care Task Details</h3>
+                        
+                        <div class="form-row">
+                            <label class="form-label required-indicator">Select Pet</label>
+                            <select name="pet_id" required class="form-input-field" id="pet-select">
                                     <option value="">-- Select a Pet --</option>
-                                    <?php 
-                                    if($pets_result && $pets_result->num_rows > 0): 
-                                        while($pet = $pets_result->fetch_assoc()): 
+                                    <?php
+                                    if($pets_result && $pets_result->num_rows > 0):
+                                        while($pet = $pets_result->fetch_assoc()):
                                     ?>
                                         <option value="<?php echo $pet['Pet_id']; ?>">
                                             <?php echo htmlspecialchars($pet['Pet_Name']) . ' (' . htmlspecialchars($pet['Species']) . ' - ' . htmlspecialchars($pet['Breed']) . ')'; ?>
                                         </option>
-                                    <?php 
+                                    <?php
                                         endwhile;
                                     endif;
                                     ?>
                                 </select>
-                            </div>
                         </div>
 
-                        <div class="info-row">
-                            <div class="info-label">Date</div>
-                            <div class="info-value">
-                                <input type="date" name="activity_date" value="<?php echo date('Y-m-d'); ?>" required class="form-input" min="<?php echo date('Y-m-d'); ?>">
-                            </div>
+                        <div class="form-row">
+                            <label class="form-label required-indicator">Date</label>
+                            <input type="date" name="activity_date" value="<?php echo date('Y-m-d'); ?>" required class="form-input-field" min="<?php echo date('Y-m-d'); ?>">
                         </div>
 
-                        <div class="info-row">
-                            <div class="info-label">Time</div>
-                            <div class="info-value">
-                                <input type="time" name="activity_time" value="<?php echo date('H:i'); ?>" required class="form-input">
-                            </div>
+                        <div class="form-row">
+                            <label class="form-label required-indicator">Time</label>
+                            <input type="time" name="activity_time" value="<?php echo date('H:i'); ?>" required class="form-input-field">
                         </div>
 
-                        <div class="info-row">
-                            <div class="info-label">Activity Type</div>
-                            <div class="info-value">
-                                <select name="activity_type" required class="form-input">
+                        <div class="form-row">
+                            <label class="form-label required-indicator">Activity Type</label>
+                            <select name="activity_type" required class="form-input-field">
                                     <option value="">-- Select Activity --</option>
                                     <option value="Feeding">Feeding</option>
                                     <option value="Exercise">Exercise</option>
@@ -195,37 +186,37 @@ if (!$staff_result) {
                                     <option value="Cleaning">Cleaning</option>
                                     <option value="Other">Other</option>
                                 </select>
-                            </div>
                         </div>
 
-                        <div class="info-row">
-                            <div class="info-label">Assign to Staff</div>
-                            <div class="info-value">
-                                <select name="staff_id" required class="form-input">
-                                    <?php 
-                                    if($staff_result && $staff_result->num_rows > 0): 
-                                        while($staff = $staff_result->fetch_assoc()): 
+                        <div class="form-row">
+                            <label class="form-label required-indicator">Assign to Staff</label>
+                            <select name="staff_id" required class="form-input-field">
+                                    <?php
+                                    if($staff_result && $staff_result->num_rows > 0):
+                                        while($staff = $staff_result->fetch_assoc()):
                                     ?>
                                         <option value="<?php echo $staff['Staff_id']; ?>" <?php echo $staff_id == $staff['Staff_id'] ? 'selected' : ''; ?>>
                                             <?php echo htmlspecialchars($staff['Name']); ?>
                                         </option>
-                                    <?php 
+                                    <?php
                                         endwhile;
                                     endif;
                                     ?>
                                 </select>
-                            </div>
                         </div>
                     </div>
 
-                    <div class="log-description-card">
-                        <h4>Task Description</h4>
-                        <textarea name="description" rows="6" required class="form-textarea" placeholder="Enter detailed description of the care task..."></textarea>
+                    <div class="form-card">
+                        <h3 class="form-section-title">Task Description</h3>
+                        <div class="form-row">
+                            <label class="form-label required-indicator">Description</label>
+                            <textarea name="description" rows="6" required class="form-textarea-field" placeholder="Enter detailed description of the care task..."></textarea>
+                        </div>
                     </div>
 
-                    <div class="log-actions">
-                        <button type="button" class="action-btn secondary" onclick="window.location.href='staff.php'">Cancel</button>
-                        <button type="submit" class="action-btn primary">Schedule Task</button>
+                    <div class="form-actions-bar">
+                        <button type="button" class="btn-cancel" onclick="window.location.href='staff.php'">Cancel</button>
+                        <button type="submit" class="btn-submit">Schedule Task</button>
                     </div>
                 </form>
             </div>

@@ -98,7 +98,6 @@
 .view-btn:hover {
     background-color: #357abd;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
 }
 
 .no-applications {
@@ -138,7 +137,6 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    box-shadow: 0 4px 15px #667eea;
 }
 
 .stat-item {
@@ -149,7 +147,6 @@
     font-size: 42px;
     font-weight: bold;
     margin-bottom: 8px;
-    text-shadow: 0 2px 4px rgb(255, 255, 255);
 }
 
 .stat-label {
