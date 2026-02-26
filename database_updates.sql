@@ -12,36 +12,6 @@ ALTER TABLE Staff ADD COLUMN Password VARCHAR(255) NOT NULL DEFAULT 'staff123' A
 -- add password column to Manager table
 ALTER TABLE Manager ADD COLUMN Password VARCHAR(255) NOT NULL DEFAULT 'admin123' AFTER Name;
 
-
--- Create ShelterAppointment table
-CREATE TABLE IF NOT EXISTS ShelterAppointment (
-    Appointment_id INT PRIMARY KEY AUTO_INCREMENT,
-    Shelter_id INT,
-    User_name VARCHAR(100) NOT NULL,
-    User_email VARCHAR(255) NOT NULL,
-    User_phone VARCHAR(20),
-    Appointment_date DATE NOT NULL,
-    Appointment_time TIME NOT NULL,
-    Note TEXT,
-    Status ENUM('Pending', 'Confirmed', 'Cancelled', 'Completed') DEFAULT 'Pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE CASCADE
-);
-
--- Create CareLogs table for pet care tracking
-CREATE TABLE IF NOT EXISTS CareLogs (
-    Log_id INT PRIMARY KEY AUTO_INCREMENT,
-    Pet_id INT NOT NULL,
-    Staff_id INT,
-    Activity_type ENUM('Feeding', 'Exercise', 'Medication', 'Grooming', 'Vet Visit', 'Other') NOT NULL,
-    Activity_date DATE NOT NULL,
-    Activity_time TIME NOT NULL,
-    Description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Pet_id) REFERENCES Pets(Pet_id) ON DELETE CASCADE,
-    FOREIGN KEY (Staff_id) REFERENCES Staff(Staff_id) ON DELETE SET NULL
-);
-
 INSERT INTO Users (Name, Email, Password, Phone, Address, Bio) VALUES
 ('Bob', 'bob@example.com', 'user123', '(66) 123-4567', '123 Main St, Bangkok, Thailand', 'Animal lover with experience'),
 ('Smith', 'smith@example.com', 'user123', '(66) 234-5678', '456 Park Ave, Bangkok, Thailand', 'First time pet owner');
@@ -49,7 +19,10 @@ INSERT INTO Users (Name, Email, Password, Phone, Address, Bio) VALUES
 -- Staff
 INSERT INTO Staff (Name, Email, Password, Phone, Works_at) VALUES
 ('Johnson', 'john@example.com', 'staff123', '(66) 345-6789', 'Bangkok Shelter'),
-('Mike', 'mike@example.com', 'staff123', '(66) 456-7890', 'Bangkok Shelter');
+('Mike', 'mike@example.com', 'staff123', '(66) 456-7890', 'Bangkok Shelter'),
+('Sarah', 'sarah@example.com', 'staff123', '(66) 555-1234', 'Bangkok Shelter'),
+('David', 'david@example.com', 'staff123', '(66) 555-5678', 'Bangkok Shelter'),
+('Emily', 'emily@example.com', 'staff123', '(66) 555-9012', 'Bangkok Shelter');
 
 -- Manager
 INSERT INTO Manager (Name, Email, Password, Phone, Manages) VALUES

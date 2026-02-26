@@ -59,7 +59,8 @@ CREATE TABLE Pets (
     FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE SET NULL
 );
 
---Store the applications submitted by users for adopting pets, including their answers to application questions and the status of their applications
+--Store the applications submitted by users for adopting pets, including their answers to application questions 
+--and the status of their applications
 CREATE TABLE Application (
     App_id INT PRIMARY KEY AUTO_INCREMENT,
     Pet_id INT,
@@ -70,4 +71,33 @@ CREATE TABLE Application (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (Pet_id) REFERENCES Pets(Pet_id) ON DELETE CASCADE,
     FOREIGN KEY (User_id) REFERENCES Users(User_id) ON DELETE CASCADE
+);
+
+-- Create ShelterAppointment table
+CREATE TABLE ShelterAppointment (
+    Appointment_id INT PRIMARY KEY AUTO_INCREMENT,
+    Shelter_id INT,
+    User_name VARCHAR(100) NOT NULL,
+    User_email VARCHAR(255) NOT NULL,
+    User_phone VARCHAR(20),
+    Appointment_date DATE NOT NULL,
+    Appointment_time TIME NOT NULL,
+    Note TEXT,
+    Status ENUM('Pending', 'Confirmed', 'Cancelled', 'Completed') DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (Shelter_id) REFERENCES Shelter(Shelter_id) ON DELETE CASCADE
+);
+
+-- Create CareLogs table for pet care tracking
+CREATE TABLE CareLogs (
+    Log_id INT PRIMARY KEY AUTO_INCREMENT,
+    Pet_id INT NOT NULL,
+    Staff_id INT,
+    Activity_type ENUM('Feeding', 'Exercise', 'Medication', 'Grooming', 'Vet Visit', 'Other') NOT NULL,
+    Activity_date DATE NOT NULL,
+    Activity_time TIME NOT NULL,
+    Description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (Pet_id) REFERENCES Pets(Pet_id) ON DELETE CASCADE,
+    FOREIGN KEY (Staff_id) REFERENCES Staff(Staff_id) ON DELETE SET NULL
 );
